@@ -9,6 +9,21 @@ export const deploy = async <C extends Contract>(name: string): Promise<C> => {
 	return contract as C
 }
 
+export const deployWithProxy = async <C extends Contract>(
+	name: string
+): Promise<C> => {
+	const factory = await ethers.getContractFactory(name)
+	const adminFactory = await ethers.getContractFactory('Admin')
+	const adminDeployed = await (await adminFactory.deploy()).deployed()
+	const deployedContract = await (await factory.deploy()).deployed()
+	const proxy = await deployProxy(
+		deployedContract.address,
+		adminDeployed.address,
+		new Uint8Array()
+	)
+	return deployedContract.attach(proxy.address) as C
+}
+
 export const deployProxy = async (
 	logic: string,
 	admin: string,
