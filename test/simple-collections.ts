@@ -1,42 +1,108 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { expect, use } from 'chai'
-import { BigNumber } from 'ethers'
+import { utils } from 'ethers'
 import { solidity } from 'ethereum-waffle'
-import { deployWithProxy, toBigNumber } from './utils'
+import { deploy } from './utils'
 import { SimpleCollections } from '../typechain-types'
+import { ethers } from 'hardhat'
 
 use(solidity)
 
 describe('SimpleCollections', () => {
-	describe('initialize', () => {
+	describe('setImages', () => {
 		describe('success', () => {
-			it('initializing', async () => {
-				const cont = await deployWithProxy<SimpleCollections>(
-					'SimpleCollections'
+			it('set the images', async () => {
+				const cont = await deploy<SimpleCollections>('SimpleCollections')
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const y = utils.keccak256(utils.toUtf8Bytes('Y'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				await cont.setImages(
+					[
+						{
+							src: 'X_SRC',
+							requiredETHAmount: eth1,
+							requiredETHFee: eth001,
+						},
+						{
+							src: 'Y_SRC',
+							requiredETHAmount: eth1,
+							requiredETHFee: eth001,
+						},
+					],
+					[x, y]
 				)
-				await cont.initialize()
-				const owner = await cont.owner()
-				expect(owner).to.equal('3')
+				const image1 = await cont.images(x)
+				const image2 = await cont.images(y)
+				expect(image1.src).to.equal('X_SRC')
+				expect(image1.requiredETHAmount).to.equal(eth1)
+				expect(image1.requiredETHFee).to.equal(eth001)
+				expect(image2.src).to.equal('Y_SRC')
+				expect(image2.requiredETHAmount).to.equal(eth1)
+				expect(image2.requiredETHFee).to.equal(eth001)
 			})
 		})
 		describe('fail', () => {
-			it('should fail to initialize when already initialized', async () => {
-				const cont = await deployWithProxy<SimpleCollections>(
-					'SimpleCollections'
-				)
-				await cont.initialize()
+			it('should fail to call when the sender is not the owner', async () => {
+				const cont = await deploy<SimpleCollections>('SimpleCollections')
+				const [, addr1] = await ethers.getSigners()
 
-				await expect(cont.initialize()).to.be.revertedWith(
-					'Initializable: contract is already initialized'
-				)
+				await expect(
+					cont.connect(addr1).setImages(
+						[
+							{
+								src: 'X_SRC',
+								requiredETHAmount: utils.parseEther('1'),
+								requiredETHFee: utils.parseEther('0.01'),
+							},
+						],
+						[utils.keccak256(utils.toUtf8Bytes('X'))]
+					)
+				).to.be.revertedWith('Ownable: caller is not the owner')
 			})
 		})
 	})
 
-	describe('setImages')
+	describe.skip('removeImages', () => {
+		describe('success', () => {
+			it('remove the images')
+		})
+		describe('fail', () => {
+			it('should fail to call when the sender is not owner')
+		})
+	})
 
-	describe('removeImages')
+	describe.skip('onBeforeMint', () => {
+		describe('success', () => {
+			it(
+				'returns true if receives the defined bytes32 key and passes validation'
+			)
 
-	describe('onBeforeMint')
+			it('update stakedAmountAtMinted when returning true')
+		})
+		describe('fail', () => {
+			it('should fail to call when the sender is not STokensManager')
 
-	describe('image')
+			it('returns false if the received bytes32 key is not defined')
+
+			it('returns false if not passed validation')
+		})
+	})
+
+	describe.skip('image', () => {
+		describe('success', () => {
+			it(
+				'returns correct image if the received bytes32 key is exists and staked amount is not changed'
+			)
+
+			it(
+				'returns correct image if the received bytes32 key is exists and staked amount is increased'
+			)
+		})
+		describe('fail', () => {
+			it('returns empty string if the received bytes32 key is not defined')
+
+			it('returns empty string if the staked amount is decreased')
+		})
+	})
 })

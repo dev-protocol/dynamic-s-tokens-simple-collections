@@ -3,10 +3,10 @@ pragma solidity 0.8.9;
 
 import "@devprotocol/i-s-tokens/contracts/interface/ITokenURIDescriptor.sol";
 import "@devprotocol/i-s-tokens/contracts/interface/ISTokensManagerStruct.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interfaces/ISwapAndStake.sol";
 
-contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
+contract SimpleCollections is ITokenURIDescriptor, Ownable {
 	struct Image {
 		string src;
 		uint256 requiredETHAmount;
@@ -17,10 +17,6 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	address public gateway;
 	mapping(bytes32 => Image) public images;
 	mapping(uint256 => uint256) public stakedAmountAtMinted;
-
-	function initialize() external initializer {
-		__Ownable_init();
-	}
 
 	function image(
 		uint256 id,
