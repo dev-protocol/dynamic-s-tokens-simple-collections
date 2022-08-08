@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 pragma solidity 0.8.9;
 
-import "@devprotocol/i-s-tokens/contracts/interface/ITokenURIDescriptor.sol";
-import "@devprotocol/i-s-tokens/contracts/interface/ISTokensManagerStruct.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@devprotocol/i-s-tokens/contracts/interfaces/ITokenURIDescriptor.sol";
+import "@devprotocol/i-s-tokens/contracts/interfaces/ISTokensManagerStruct.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "./interfaces/ISwapAndStake.sol";
 
-contract SimpleCollections is ITokenURIDescriptor, Ownable {
+contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	struct Image {
 		string src;
 		uint256 requiredETHAmount;
@@ -17,6 +17,10 @@ contract SimpleCollections is ITokenURIDescriptor, Ownable {
 	address public gateway;
 	mapping(bytes32 => Image) public images;
 	mapping(uint256 => uint256) public stakedAmountAtMinted;
+
+	function initialize() external initializer {
+		__Ownable_init();
+	}
 
 	function image(
 		uint256 id,
@@ -63,6 +67,15 @@ contract SimpleCollections is ITokenURIDescriptor, Ownable {
 		bytes32 key
 	) external returns (bool) {
 		Image memory img = images[key];
+
+		// When not defined the key
+		if (
+			bytes(img.src).length == 0 ||
+			img.requiredETHAmount == 0 ||
+			img.requiredETHFee == 0
+		) {
+			return false;
+		}
 
 		// Always only allow staking via the SwapAndStake contract.
 		ISwapAndStake.Amounts memory stakeVia = swapAndStake.gatewayOf(gateway);
