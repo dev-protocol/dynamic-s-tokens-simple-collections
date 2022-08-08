@@ -1,8 +1,11 @@
 import { ethers } from 'hardhat'
+import { SimpleCollections__factory } from '../typechain-types'
 import { deployAdmin, deployProxy } from './utils'
 
 async function main() {
-	const contract = await ethers.getContractFactory('SimpleCollections')
+	const contract = (await ethers.getContractFactory(
+		'SimpleCollections'
+	)) as SimpleCollections__factory
 	const deployedContract = await contract.deploy()
 
 	const admin = await deployAdmin()
