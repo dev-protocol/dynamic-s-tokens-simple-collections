@@ -19,8 +19,9 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
 
-	function initialize() external initializer {
+	function initialize(address _contract) external initializer {
 		__Ownable_init();
+        swapAndStake = ISwapAndStake(_contract);
 	}
 
 	modifier onlyPropertyAuthor(address _property) {
@@ -45,31 +46,29 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	}
 
 	function setImages(
-		ISTokensManagerStruct.StakingPositions memory _positions,
+        address _propertyAddress,
 		Image[] memory _images,
 		bytes32[] memory _keys
-	) external onlyPropertyAuthor(_positions.property) {
+	) external onlyPropertyAuthor(_propertyAddress) {
 		for (uint256 i = 0; i < _images.length; i++) {
 			Image memory img = _images[i];
 			bytes32 key = _keys[i];
-			propertyImages[_positions.property][key] = img;
+			propertyImages[_propertyAddress][key] = img;
 		}
 	}
 
 	function removeImage(
-		ISTokensManagerStruct.StakingPositions memory _positions,
+        address _propertyAddress,
 		bytes32 _key
-	) external onlyPropertyAuthor(_positions.property) {
-		delete propertyImages[_positions.property][_key];
+	) external onlyPropertyAuthor(_propertyAddress) {
+		delete propertyImages[_propertyAddress][_key];
 	}
 
 	function setGateway(
-		ISTokensManagerStruct.StakingPositions memory _positions,
-		address _contract,
+        address _propertyAddress,
 		address _gateway
-	) external onlyPropertyAuthor(_positions.property) {
-		swapAndStake = ISwapAndStake(_contract);
-		gateway[_positions.property] = _gateway;
+	) external onlyPropertyAuthor(_propertyAddress) {
+		gateway[_propertyAddress] = _gateway;
 	}
 
 	function onBeforeMint(
