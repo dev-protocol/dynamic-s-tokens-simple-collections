@@ -1,5 +1,5 @@
 import { ethers } from 'hardhat'
-import {
+import type {
 	Admin,
 	Admin__factory,
 	UpgradeableProxy,

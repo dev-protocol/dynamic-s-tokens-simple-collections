@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/prefer-readonly-parameter-types */
 /* eslint-disable @typescript-eslint/naming-convention */
 import { expect, use } from 'chai'
-import { BigNumberish, constants, utils } from 'ethers'
+import type { BigNumberish } from 'ethers'
+import { constants, utils } from 'ethers'
 import { solidity } from 'ethereum-waffle'
 import { deployWithProxy } from './utils'
-import { SimpleCollections } from '../typechain-types'
+import type { SimpleCollections } from '../typechain-types'
 import { ethers } from 'hardhat'
 
 use(solidity)

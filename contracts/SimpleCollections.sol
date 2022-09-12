@@ -15,9 +15,10 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	}
 
 	ISwapAndStake public swapAndStake;
-    mapping(address => address) public gateway;
+	mapping(address => address) public gateway;
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
+
 	function initialize() external initializer {
 		__Ownable_init();
 	}
@@ -44,13 +45,10 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	}
 
 	function setImages(
-        ISTokensManagerStruct.StakingPositions memory _positions,
-        Image[] memory _images, 
-        bytes32[] memory _keys)
-		external
-		onlyPropertyAuthor(_positions.property)
-	{
-
+		ISTokensManagerStruct.StakingPositions memory _positions,
+		Image[] memory _images,
+		bytes32[] memory _keys
+	) external onlyPropertyAuthor(_positions.property) {
 		for (uint256 i = 0; i < _images.length; i++) {
 			Image memory img = _images[i];
 			bytes32 key = _keys[i];
@@ -59,19 +57,17 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	}
 
 	function removeImage(
-        ISTokensManagerStruct.StakingPositions memory _positions,
-        bytes32 _key
-    ) external onlyPropertyAuthor(_positions.property) {
+		ISTokensManagerStruct.StakingPositions memory _positions,
+		bytes32 _key
+	) external onlyPropertyAuthor(_positions.property) {
 		delete propertyImages[_positions.property][_key];
 	}
 
 	function setGateway(
-        ISTokensManagerStruct.StakingPositions memory _positions,
-        address _contract, 
-        address _gateway)
-		external
-        onlyPropertyAuthor(_positions.property)
-	{
+		ISTokensManagerStruct.StakingPositions memory _positions,
+		address _contract,
+		address _gateway
+	) external onlyPropertyAuthor(_positions.property) {
 		swapAndStake = ISwapAndStake(_contract);
 		gateway[_positions.property] = _gateway;
 	}
@@ -94,7 +90,9 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		}
 
 		// Always only allow staking via the SwapAndStake contract.
-		ISwapAndStake.Amounts memory stakeVia = swapAndStake.gatewayOf(gateway[_positions.property]);
+		ISwapAndStake.Amounts memory stakeVia = swapAndStake.gatewayOf(
+			gateway[_positions.property]
+		);
 
 		// Validate the staking position.
 		bool valid = img.requiredETHAmount <= stakeVia.input &&

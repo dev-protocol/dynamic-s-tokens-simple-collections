@@ -1,6 +1,10 @@
 import { ethers } from 'hardhat'
-import { Contract, BigNumber } from 'ethers'
-import { UpgradeableProxy, UpgradeableProxy__factory } from '../typechain-types'
+import type { Contract } from 'ethers'
+import { BigNumber } from 'ethers'
+import type {
+	UpgradeableProxy,
+	UpgradeableProxy__factory,
+} from '../typechain-types'
 
 export const deploy = async <C extends Contract>(name: string): Promise<C> => {
 	const factory = await ethers.getContractFactory(name)
