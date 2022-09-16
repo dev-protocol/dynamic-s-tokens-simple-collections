@@ -4,6 +4,7 @@ pragma solidity 0.8.9;
 import "@devprotocol/i-s-tokens/contracts/interfaces/ITokenURIDescriptor.sol";
 import "@devprotocol/i-s-tokens/contracts/interfaces/ISTokensManagerStruct.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "./interfaces/IProperty.sol";
 import "./interfaces/ISwapAndStake.sol";
 
 contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
@@ -14,12 +15,19 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	}
 
 	ISwapAndStake public swapAndStake;
-	address public gateway;
-	mapping(bytes32 => Image) public images;
-	mapping(uint256 => uint256) public stakedAmountAtMinted;
+	mapping(address => address) public gateway;
+	mapping(address => mapping(bytes32 => Image)) public propertyImages;
+	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
 
-	function initialize() external initializer {
+	function initialize(address _contract) external initializer {
 		__Ownable_init();
+        swapAndStake = ISwapAndStake(_contract);
+	}
+
+	modifier onlyPropertyAuthor(address _property) {
+		address author = IProperty(_property).author();
+		require(author == _msgSender(), "illegal access");
+		_;
 	}
 
 	function image(
@@ -29,35 +37,38 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		ISTokensManagerStruct.Rewards memory,
 		bytes32 key
 	) external view returns (string memory) {
-		Image memory img = images[key];
-		uint256 stakedAtMinted = stakedAmountAtMinted[id];
+		Image memory img = propertyImages[_positions.property][key];
+		uint256 stakedAtMinted = stakedAmountAtMinted[_positions.property][id];
 		if (stakedAtMinted > _positions.amount) {
 			return "";
 		}
 		return img.src;
 	}
 
-	function setImages(Image[] memory _images, bytes32[] memory _keys)
-		external
-		onlyOwner
-	{
+	function setImages(
+        address _propertyAddress,
+		Image[] memory _images,
+		bytes32[] memory _keys
+	) external onlyPropertyAuthor(_propertyAddress) {
 		for (uint256 i = 0; i < _images.length; i++) {
 			Image memory img = _images[i];
 			bytes32 key = _keys[i];
-			images[key] = img;
+			propertyImages[_propertyAddress][key] = img;
 		}
 	}
 
-	function removeImage(bytes32 _key) external onlyOwner {
-		delete images[_key];
+	function removeImage(
+        address _propertyAddress,
+		bytes32 _key
+	) external onlyPropertyAuthor(_propertyAddress) {
+		delete propertyImages[_propertyAddress][_key];
 	}
 
-	function setGateway(address _contract, address _gateway)
-		external
-		onlyOwner
-	{
-		swapAndStake = ISwapAndStake(_contract);
-		gateway = _gateway;
+	function setGateway(
+        address _propertyAddress,
+		address _gateway
+	) external onlyPropertyAuthor(_propertyAddress) {
+		gateway[_propertyAddress] = _gateway;
 	}
 
 	function onBeforeMint(
@@ -66,7 +77,7 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		ISTokensManagerStruct.StakingPositions memory _positions,
 		bytes32 key
 	) external returns (bool) {
-		Image memory img = images[key];
+		Image memory img = propertyImages[_positions.property][key];
 
 		// When not defined the key
 		if (
@@ -78,14 +89,16 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		}
 
 		// Always only allow staking via the SwapAndStake contract.
-		ISwapAndStake.Amounts memory stakeVia = swapAndStake.gatewayOf(gateway);
+		ISwapAndStake.Amounts memory stakeVia = swapAndStake.gatewayOf(
+			gateway[_positions.property]
+		);
 
 		// Validate the staking position.
 		bool valid = img.requiredETHAmount <= stakeVia.input &&
 			img.requiredETHFee <= stakeVia.fee;
 
 		if (valid) {
-			stakedAmountAtMinted[id] = _positions.amount;
+			stakedAmountAtMinted[_positions.property][id] = _positions.amount;
 		}
 
 		return valid;

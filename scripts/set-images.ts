@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { BigNumber, utils } from 'ethers'
 import { ethers } from 'hardhat'
-import {
+import type {
 	SimpleCollections,
 	SimpleCollections__factory,
 } from '../typechain-types'

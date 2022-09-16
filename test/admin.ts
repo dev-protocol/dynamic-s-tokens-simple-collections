@@ -3,7 +3,11 @@ import { ethers } from 'hardhat'
 import { constants } from 'ethers'
 import { solidity } from 'ethereum-waffle'
 import { deploy, deployProxy } from './utils'
-import { SimpleCollections, Admin, UpgradeableProxy } from '../typechain-types'
+import type {
+	SimpleCollections,
+	Admin,
+	UpgradeableProxy,
+} from '../typechain-types'
 
 use(solidity)
 

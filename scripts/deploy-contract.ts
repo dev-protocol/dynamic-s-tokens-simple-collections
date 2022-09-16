@@ -1,5 +1,5 @@
 import { ethers } from 'hardhat'
-import { SimpleCollections__factory } from '../typechain-types'
+import type { SimpleCollections__factory } from '../typechain-types'
 import { deployAdmin, deployProxy } from './utils'
 
 async function main() {
