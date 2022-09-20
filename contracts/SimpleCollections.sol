@@ -21,7 +21,7 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 	function initialize(address _contract) external initializer {
 		__Ownable_init();
-        swapAndStake = ISwapAndStake(_contract);
+		swapAndStake = ISwapAndStake(_contract);
 	}
 
 	modifier onlyPropertyAuthor(address _property) {
@@ -46,7 +46,7 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	}
 
 	function setImages(
-        address _propertyAddress,
+		address _propertyAddress,
 		Image[] memory _images,
 		bytes32[] memory _keys
 	) external onlyPropertyAuthor(_propertyAddress) {
@@ -57,17 +57,17 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		}
 	}
 
-	function removeImage(
-        address _propertyAddress,
-		bytes32 _key
-	) external onlyPropertyAuthor(_propertyAddress) {
+	function removeImage(address _propertyAddress, bytes32 _key)
+		external
+		onlyPropertyAuthor(_propertyAddress)
+	{
 		delete propertyImages[_propertyAddress][_key];
 	}
 
-	function setGateway(
-        address _propertyAddress,
-		address _gateway
-	) external onlyPropertyAuthor(_propertyAddress) {
+	function setGateway(address _propertyAddress, address _gateway)
+		external
+		onlyPropertyAuthor(_propertyAddress)
+	{
 		gateway[_propertyAddress] = _gateway;
 	}
 
