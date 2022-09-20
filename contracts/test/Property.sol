@@ -11,11 +11,11 @@ contract Property is ERC20 {
 	uint8 private __decimals;
 
 	constructor(
-        address _own,
+		address _own,
 		string memory _name,
 		string memory _symbol
-    ) ERC20(_name, _symbol) {
-        /**
+	) ERC20(_name, _symbol) {
+		/**
 		 * Sets the author.
 		 */
 		__author = _own;
@@ -24,8 +24,8 @@ contract Property is ERC20 {
 		 * Sets the ERO20 attributes
 		 */
 		__decimals = PROPERTY_DECIMALS;
-        _mint(__author, 9500000000000000000000000);
-    }
+		_mint(__author, 9500000000000000000000000);
+	}
 
 	/**
 	 * @dev Throws if called by any account other than the author.
