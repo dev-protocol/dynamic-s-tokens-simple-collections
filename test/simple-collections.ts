@@ -7,7 +7,6 @@ import { solidity } from 'ethereum-waffle'
 import { deployWithProxy } from './utils'
 import type { SimpleCollections } from '../typechain-types'
 import { ethers } from 'hardhat'
-import { performance } from 'perf_hooks'
 
 use(solidity)
 
@@ -70,7 +69,7 @@ describe('SimpleCollections', () => {
 				const cont = await deployWithProxy<SimpleCollections>(
 					'SimpleCollections'
 				)
-				const [addr1, addr2] = await ethers.getSigners()
+				const [, addr2] = await ethers.getSigners()
 				await cont.initialize(addr2.address)
 
 				await expect(cont.initialize(addr2.address)).to.be.revertedWith(
@@ -138,7 +137,7 @@ describe('SimpleCollections', () => {
 							[utils.keccak256(utils.toUtf8Bytes('X'))]
 						)
 				).to.be.revertedWith(
-					'PropertyAuthor: caller is not the Property Author'
+					'illegal access'
 				)
 			})
 		})
@@ -210,7 +209,7 @@ describe('SimpleCollections', () => {
 				await expect(
 					cont.connect(addr1).removeImage(property.address, x)
 				).to.be.revertedWith(
-					'PropertyAuthor: caller is not the Property Author'
+					'illegal access'
 				)
 			})
 		})
@@ -245,9 +244,9 @@ describe('SimpleCollections', () => {
 				await cont.initialize(swap.address)
 
 				await expect(
-					cont.connect(addr1).setGateway(swap.address, gateway.address)
+					cont.connect(addr1).setGateway(property.address, gateway.address)
 				).to.be.revertedWith(
-					'PropertyAuthor: caller is not the Property Author'
+					'illegal access'
 				)
 			})
 		})

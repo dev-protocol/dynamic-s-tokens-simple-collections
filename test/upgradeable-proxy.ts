@@ -12,10 +12,10 @@ describe('UpgradeableProxy', () => {
 	> => {
 		const data = ethers.utils.arrayify('0x')
 		const cont = await deploy<SimpleCollections>('SimpleCollections')
-		const [owner, addr1] = await ethers.getSigners()
+		const [owner, addr1, swap] = await ethers.getSigners()
 		const proxy = await deployProxy(cont.address, owner.address, data)
 		const proxified = cont.attach(proxy.address).connect(addr1)
-		await proxified.initialize()
+		await proxified.initialize(swap.address)
 
 		return [proxy, cont, proxified]
 	}
@@ -35,12 +35,12 @@ describe('UpgradeableProxy', () => {
 
 			it('storing data', async () => {
 				const [proxy, , proxified] = await init()
-				const [addr1, addr2] = await ethers.getSigners()
-				await proxified.setGateway(addr1.address, addr2.address)
+				const [property, gateway] = await ethers.getSigners()
+				await proxified.setGateway(property.address, gateway.address)
 				const nextImpl = await deploy<SimpleCollections>('SimpleCollections')
 				await proxy.upgradeTo(nextImpl.address)
-				const value = await proxified.gateway()
-				expect(value).to.equal(addr2.address)
+				const value = await proxified.gateway(property.address)
+				expect(value).to.equal(gateway.address)
 			})
 		})
 		describe('fail', () => {

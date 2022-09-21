@@ -20,7 +20,8 @@ describe('Admin', () => {
 		const admin = await deploy<Admin>('Admin')
 		const proxy = await deployProxy(cont.address, admin.address, data)
 		const proxified = cont.attach(proxy.address)
-		await proxified.initialize()
+		const [swap] = await ethers.getSigners()
+		await proxified.initialize(swap.address)
 
 		return [proxy, cont, proxified, admin]
 	}
