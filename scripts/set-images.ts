@@ -25,7 +25,11 @@ async function main() {
 		await ethers.getContractFactory('Property')
 	).deploy(propertyAuthor.address, 'Testing', 'TEST')
 	const deployedContract = contract.attach(DEPLOYED_ADDRESS)
-	await deployedContract.setImages(property.address, IMAGES, KEYS.map(utils.keccak256))
+	await deployedContract.setImages(
+		property.address,
+		IMAGES,
+		KEYS.map(utils.keccak256)
+	)
 }
 
 main()
