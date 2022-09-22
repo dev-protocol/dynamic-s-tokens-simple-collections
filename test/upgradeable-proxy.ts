@@ -34,8 +34,11 @@ describe('UpgradeableProxy', () => {
 			})
 
 			it('storing data', async () => {
+				const [, propertyAuthor, gateway] = await ethers.getSigners()
 				const [proxy, , proxified] = await init()
-				const [property, gateway] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(propertyAuthor.address, 'Testing', 'TEST')
 				await proxified.setGateway(property.address, gateway.address)
 				const nextImpl = await deploy<SimpleCollections>('SimpleCollections')
 				await proxy.upgradeTo(nextImpl.address)

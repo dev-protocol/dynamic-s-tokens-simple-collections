@@ -136,9 +136,7 @@ describe('SimpleCollections', () => {
 							],
 							[utils.keccak256(utils.toUtf8Bytes('X'))]
 						)
-				).to.be.revertedWith(
-					'illegal access'
-				)
+				).to.be.revertedWith('illegal access')
 			})
 		})
 	})
@@ -208,9 +206,7 @@ describe('SimpleCollections', () => {
 
 				await expect(
 					cont.connect(addr1).removeImage(property.address, x)
-				).to.be.revertedWith(
-					'illegal access'
-				)
+				).to.be.revertedWith('illegal access')
 			})
 		})
 	})
@@ -245,9 +241,7 @@ describe('SimpleCollections', () => {
 
 				await expect(
 					cont.connect(addr1).setGateway(property.address, gateway.address)
-				).to.be.revertedWith(
-					'illegal access'
-				)
+				).to.be.revertedWith('illegal access')
 			})
 		})
 	})
@@ -283,6 +277,7 @@ describe('SimpleCollections', () => {
 					gateway.address,
 					{ input: eth1, fee: eth001 },
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					x
@@ -322,6 +317,7 @@ describe('SimpleCollections', () => {
 					gateway.address,
 					{ input: eth1, fee: eth001 },
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					x
@@ -361,6 +357,7 @@ describe('SimpleCollections', () => {
 					9,
 					gateway.address,
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					x
@@ -398,6 +395,7 @@ describe('SimpleCollections', () => {
 					gateway.address,
 					{ input: eth1, fee: eth001 },
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					utils.keccak256(utils.toUtf8Bytes('XYZ'))
@@ -434,6 +432,7 @@ describe('SimpleCollections', () => {
 					gateway.address,
 					{ input: utils.parseEther('0.999'), fee: eth001 },
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					x
@@ -470,6 +469,7 @@ describe('SimpleCollections', () => {
 					gateway.address,
 					{ input: eth1, fee: utils.parseEther('0.00999') },
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					x
@@ -512,6 +512,7 @@ describe('SimpleCollections', () => {
 					gateway.address,
 					{ input: eth1, fee: eth001 },
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					x
@@ -521,6 +522,7 @@ describe('SimpleCollections', () => {
 					9,
 					constants.AddressZero,
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					structRewards(),
@@ -560,6 +562,7 @@ describe('SimpleCollections', () => {
 					gateway.address,
 					{ input: eth1, fee: eth001 },
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					x
@@ -569,6 +572,7 @@ describe('SimpleCollections', () => {
 					9,
 					constants.AddressZero,
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3.1'),
 					}),
 					structRewards(),
@@ -610,6 +614,7 @@ describe('SimpleCollections', () => {
 					gateway.address,
 					{ input: eth1, fee: eth001 },
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					x
@@ -619,6 +624,7 @@ describe('SimpleCollections', () => {
 					9,
 					constants.AddressZero,
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					structRewards(),
@@ -659,6 +665,7 @@ describe('SimpleCollections', () => {
 					gateway.address,
 					{ input: eth1, fee: eth001 },
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					x
@@ -668,6 +675,7 @@ describe('SimpleCollections', () => {
 					9,
 					constants.AddressZero,
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('2.999'),
 					}),
 					structRewards(),

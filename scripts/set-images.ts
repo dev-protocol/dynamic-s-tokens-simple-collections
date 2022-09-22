@@ -20,9 +20,12 @@ async function main() {
 	const contract = (await ethers.getContractFactory(
 		'SimpleCollections'
 	)) as SimpleCollections__factory
+	const [propertyAuthor] = await ethers.getSigners()
+	const property = await (
+		await ethers.getContractFactory('Property')
+	).deploy(propertyAuthor.address, 'Testing', 'TEST')
 	const deployedContract = contract.attach(DEPLOYED_ADDRESS)
-
-	await deployedContract.setImages(IMAGES, KEYS.map(utils.keccak256))
+	await deployedContract.setImages(property.address, IMAGES, KEYS.map(utils.keccak256))
 }
 
 main()
