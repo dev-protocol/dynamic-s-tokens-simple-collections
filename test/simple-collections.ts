@@ -51,7 +51,6 @@ const structImage = (
 	requiredETHAmount,
 	requiredETHFee,
 })
-
 describe('SimpleCollections', () => {
 	describe('initialize', () => {
 		describe('success', () => {
@@ -59,8 +58,8 @@ describe('SimpleCollections', () => {
 				const cont = await deployWithProxy<SimpleCollections>(
 					'SimpleCollections'
 				)
-				const [addr1] = await ethers.getSigners()
-				await cont.initialize()
+				const [addr1, addr2] = await ethers.getSigners()
+				await cont.initialize(addr2.address)
 				const owner = await cont.owner()
 				expect(owner).to.equal(addr1.address)
 			})
@@ -70,9 +69,10 @@ describe('SimpleCollections', () => {
 				const cont = await deployWithProxy<SimpleCollections>(
 					'SimpleCollections'
 				)
-				await cont.initialize()
+				const [, addr2] = await ethers.getSigners()
+				await cont.initialize(addr2.address)
 
-				await expect(cont.initialize()).to.be.revertedWith(
+				await expect(cont.initialize(addr2.address)).to.be.revertedWith(
 					'Initializable: contract is already initialized'
 				)
 			})
@@ -84,21 +84,26 @@ describe('SimpleCollections', () => {
 				const cont = await deployWithProxy<SimpleCollections>(
 					'SimpleCollections'
 				)
-				await cont.initialize()
+				const [owner, swap] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swap.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const y = utils.keccak256(utils.toUtf8Bytes('Y'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
+					property.address,
 					[
 						structImage('X_SRC', eth1, eth001),
 						structImage('Y_SRC', eth1, eth001),
 					],
 					[x, y]
 				)
-				const image1 = await cont.images(x)
-				const image2 = await cont.images(y)
+				const image1 = await cont.propertyImages(property.address, x)
+				const image2 = await cont.propertyImages(property.address, y)
 				expect(image1.src).to.equal('X_SRC')
 				expect(image1.requiredETHAmount).to.equal(eth1)
 				expect(image1.requiredETHFee).to.equal(eth001)
@@ -112,14 +117,16 @@ describe('SimpleCollections', () => {
 				const cont = await deployWithProxy<SimpleCollections>(
 					'SimpleCollections'
 				)
-				await cont.initialize()
-
-				const [, addr1] = await ethers.getSigners()
-
+				const [owner, swap, addr1] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swap.address)
 				await expect(
 					cont
 						.connect(addr1)
 						.setImages(
+							property.address,
 							[
 								structImage(
 									'X_SRC',
@@ -129,24 +136,28 @@ describe('SimpleCollections', () => {
 							],
 							[utils.keccak256(utils.toUtf8Bytes('X'))]
 						)
-				).to.be.revertedWith('Ownable: caller is not the owner')
+				).to.be.revertedWith('illegal access')
 			})
 		})
 	})
-
 	describe('removeImages', () => {
 		describe('success', () => {
 			it('remove the images', async () => {
 				const cont = await deployWithProxy<SimpleCollections>(
 					'SimpleCollections'
 				)
-				await cont.initialize()
+				const [owner, swap] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swap.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const y = utils.keccak256(utils.toUtf8Bytes('Y'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
+					property.address,
 					[
 						structImage('X_SRC', eth1, eth001),
 						structImage('Y_SRC', eth1, eth001),
@@ -154,11 +165,15 @@ describe('SimpleCollections', () => {
 					[x, y]
 				)
 
-				expect((await cont.images(x)).src).to.equal('X_SRC')
+				expect((await cont.propertyImages(property.address, x)).src).to.equal(
+					'X_SRC'
+				)
 
-				await cont.removeImage(x)
+				await cont.removeImage(property.address, x)
 
-				expect((await cont.images(x)).src).to.equal('')
+				expect((await cont.propertyImages(property.address, x)).src).to.equal(
+					''
+				)
 			})
 		})
 		describe('fail', () => {
@@ -166,13 +181,18 @@ describe('SimpleCollections', () => {
 				const cont = await deployWithProxy<SimpleCollections>(
 					'SimpleCollections'
 				)
-				await cont.initialize()
+				const [owner, swap, addr1] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swap.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const y = utils.keccak256(utils.toUtf8Bytes('Y'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
+					property.address,
 					[
 						structImage('X_SRC', eth1, eth001),
 						structImage('Y_SRC', eth1, eth001),
@@ -180,28 +200,32 @@ describe('SimpleCollections', () => {
 					[x, y]
 				)
 
-				expect((await cont.images(x)).src).to.equal('X_SRC')
-				const [, addr1] = await ethers.getSigners()
-
-				await expect(cont.connect(addr1).removeImage(x)).to.be.revertedWith(
-					'Ownable: caller is not the owner'
+				expect((await cont.propertyImages(property.address, x)).src).to.equal(
+					'X_SRC'
 				)
+
+				await expect(
+					cont.connect(addr1).removeImage(property.address, x)
+				).to.be.revertedWith('illegal access')
 			})
 		})
 	})
-
 	describe('setGateway', () => {
 		describe('success', () => {
 			it('set the gateway', async () => {
 				const cont = await deployWithProxy<SimpleCollections>(
 					'SimpleCollections'
 				)
-				const [, swap, gateway] = await ethers.getSigners()
-				await cont.initialize()
-				await cont.setGateway(swap.address, gateway.address)
+				const [owner, swap, gateway] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swap.address)
+
+				await cont.setGateway(property.address, gateway.address)
 
 				expect(await cont.swapAndStake()).to.equal(swap.address)
-				expect(await cont.gateway()).to.equal(gateway.address)
+				expect(await cont.gateway(property.address)).to.equal(gateway.address)
 			})
 		})
 		describe('fail', () => {
@@ -209,16 +233,18 @@ describe('SimpleCollections', () => {
 				const cont = await deployWithProxy<SimpleCollections>(
 					'SimpleCollections'
 				)
-				const [, addr1, swap, gateway] = await ethers.getSigners()
-				await cont.initialize()
+				const [owner, addr1, swap, gateway] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swap.address)
 
 				await expect(
-					cont.connect(addr1).setGateway(swap.address, gateway.address)
-				).to.be.revertedWith('Ownable: caller is not the owner')
+					cont.connect(addr1).setGateway(property.address, gateway.address)
+				).to.be.revertedWith('illegal access')
 			})
 		})
 	})
-
 	describe('onBeforeMint', () => {
 		describe('success', () => {
 			it('returns true if receives the defined bytes32 key and passes validation', async () => {
@@ -228,20 +254,30 @@ describe('SimpleCollections', () => {
 				const swapAndStake = await (
 					await ethers.getContractFactory('SwapAndStake')
 				).deploy(cont.address)
-				const [, gateway] = await ethers.getSigners()
-				await cont.initialize()
-				await cont.setGateway(swapAndStake.address, gateway.address)
+
+				const [owner, gateway] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				await cont.setImages([structImage('X_SRC', eth1, eth001)], [x])
+				await cont.setImages(
+					property.address,
+					[structImage('X_SRC', eth1, eth001)],
+					[x]
+				)
 
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
 					{ input: eth1, fee: eth001 },
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					x
@@ -254,29 +290,40 @@ describe('SimpleCollections', () => {
 				const cont = await deployWithProxy<SimpleCollections>(
 					'SimpleCollections'
 				)
+
 				const swapAndStake = await (
 					await ethers.getContractFactory('SwapAndStake')
 				).deploy(cont.address)
-				const [, gateway] = await ethers.getSigners()
-				await cont.initialize()
-				await cont.setGateway(swapAndStake.address, gateway.address)
+
+				const [owner, gateway] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				await cont.setImages([structImage('X_SRC', eth1, eth001)], [x])
+				await cont.setImages(
+					property.address,
+					[structImage('X_SRC', eth1, eth001)],
+					[x]
+				)
 
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
 					{ input: eth1, fee: eth001 },
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					x
 				)
 
-				const res = await cont.stakedAmountAtMinted(9)
+				const res = await cont.stakedAmountAtMinted(property.address, 9)
 
 				expect(res).to.equal(utils.parseEther('3'))
 			})
@@ -286,22 +333,31 @@ describe('SimpleCollections', () => {
 				const cont = await deployWithProxy<SimpleCollections>(
 					'SimpleCollections'
 				)
+
 				const swapAndStake = await (
 					await ethers.getContractFactory('SwapAndStake')
 				).deploy(cont.address)
-				const [, gateway] = await ethers.getSigners()
-				await cont.initialize()
-				await cont.setGateway(swapAndStake.address, gateway.address)
+				const [owner, gateway] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				await cont.setImages([structImage('X_SRC', eth1, eth001)], [x])
+				await cont.setImages(
+					property.address,
+					[structImage('X_SRC', eth1, eth001)],
+					[x]
+				)
 
 				const res = await cont.callStatic.onBeforeMint(
 					9,
 					gateway.address,
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					x
@@ -314,23 +370,32 @@ describe('SimpleCollections', () => {
 				const cont = await deployWithProxy<SimpleCollections>(
 					'SimpleCollections'
 				)
+
 				const swapAndStake = await (
 					await ethers.getContractFactory('SwapAndStake')
 				).deploy(cont.address)
-				const [, gateway] = await ethers.getSigners()
-				await cont.initialize()
-				await cont.setGateway(swapAndStake.address, gateway.address)
+				const [owner, gateway] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				await cont.setImages([structImage('X_SRC', eth1, eth001)], [x])
+				await cont.setImages(
+					property.address,
+					[structImage('X_SRC', eth1, eth001)],
+					[x]
+				)
 
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
 					{ input: eth1, fee: eth001 },
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					utils.keccak256(utils.toUtf8Bytes('XYZ'))
@@ -346,20 +411,28 @@ describe('SimpleCollections', () => {
 				const swapAndStake = await (
 					await ethers.getContractFactory('SwapAndStake')
 				).deploy(cont.address)
-				const [, gateway] = await ethers.getSigners()
-				await cont.initialize()
-				await cont.setGateway(swapAndStake.address, gateway.address)
+				const [owner, gateway] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				await cont.setImages([structImage('X_SRC', eth1, eth001)], [x])
+				await cont.setImages(
+					property.address,
+					[structImage('X_SRC', eth1, eth001)],
+					[x]
+				)
 
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
 					{ input: utils.parseEther('0.999'), fee: eth001 },
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					x
@@ -375,20 +448,28 @@ describe('SimpleCollections', () => {
 				const swapAndStake = await (
 					await ethers.getContractFactory('SwapAndStake')
 				).deploy(cont.address)
-				const [, gateway] = await ethers.getSigners()
-				await cont.initialize()
-				await cont.setGateway(swapAndStake.address, gateway.address)
+				const [owner, gateway] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				await cont.setImages([structImage('X_SRC', eth1, eth001)], [x])
+				await cont.setImages(
+					property.address,
+					[structImage('X_SRC', eth1, eth001)],
+					[x]
+				)
 
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
 					{ input: eth1, fee: utils.parseEther('0.00999') },
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					x
@@ -398,30 +479,40 @@ describe('SimpleCollections', () => {
 			})
 		})
 	})
-
 	describe('image', () => {
 		describe('success', () => {
 			it('returns correct image if the received bytes32 key is exists and staked amount is not changed', async () => {
 				const cont = await deployWithProxy<SimpleCollections>(
 					'SimpleCollections'
 				)
+
 				const swapAndStake = await (
 					await ethers.getContractFactory('SwapAndStake')
 				).deploy(cont.address)
-				const [, gateway] = await ethers.getSigners()
-				await cont.initialize()
-				await cont.setGateway(swapAndStake.address, gateway.address)
+
+				const [owner, gateway] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				await cont.setImages([structImage('X_SRC', eth1, eth001)], [x])
+				await cont.setImages(
+					property.address,
+					[structImage('X_SRC', eth1, eth001)],
+					[x]
+				)
 
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
 					{ input: eth1, fee: eth001 },
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					x
@@ -431,6 +522,7 @@ describe('SimpleCollections', () => {
 					9,
 					constants.AddressZero,
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					structRewards(),
@@ -447,20 +539,30 @@ describe('SimpleCollections', () => {
 				const swapAndStake = await (
 					await ethers.getContractFactory('SwapAndStake')
 				).deploy(cont.address)
-				const [, gateway] = await ethers.getSigners()
-				await cont.initialize()
-				await cont.setGateway(swapAndStake.address, gateway.address)
+
+				const [owner, gateway] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				await cont.setImages([structImage('X_SRC', eth1, eth001)], [x])
+				await cont.setImages(
+					property.address,
+					[structImage('X_SRC', eth1, eth001)],
+					[x]
+				)
 
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
 					{ input: eth1, fee: eth001 },
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					x
@@ -470,6 +572,7 @@ describe('SimpleCollections', () => {
 					9,
 					constants.AddressZero,
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3.1'),
 					}),
 					structRewards(),
@@ -484,23 +587,34 @@ describe('SimpleCollections', () => {
 				const cont = await deployWithProxy<SimpleCollections>(
 					'SimpleCollections'
 				)
+
 				const swapAndStake = await (
 					await ethers.getContractFactory('SwapAndStake')
 				).deploy(cont.address)
-				const [, gateway] = await ethers.getSigners()
-				await cont.initialize()
-				await cont.setGateway(swapAndStake.address, gateway.address)
+
+				const [owner, gateway] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				await cont.setImages([structImage('X_SRC', eth1, eth001)], [x])
+				await cont.setImages(
+					property.address,
+					[structImage('X_SRC', eth1, eth001)],
+					[x]
+				)
 
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
 					{ input: eth1, fee: eth001 },
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					x
@@ -510,6 +624,7 @@ describe('SimpleCollections', () => {
 					9,
 					constants.AddressZero,
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					structRewards(),
@@ -523,23 +638,34 @@ describe('SimpleCollections', () => {
 				const cont = await deployWithProxy<SimpleCollections>(
 					'SimpleCollections'
 				)
+
 				const swapAndStake = await (
 					await ethers.getContractFactory('SwapAndStake')
 				).deploy(cont.address)
-				const [, gateway] = await ethers.getSigners()
-				await cont.initialize()
-				await cont.setGateway(swapAndStake.address, gateway.address)
+
+				const [owner, gateway] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				await cont.setImages([structImage('X_SRC', eth1, eth001)], [x])
+				await cont.setImages(
+					property.address,
+					[structImage('X_SRC', eth1, eth001)],
+					[x]
+				)
 
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
 					{ input: eth1, fee: eth001 },
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					x
@@ -549,6 +675,7 @@ describe('SimpleCollections', () => {
 					9,
 					constants.AddressZero,
 					structPositions({
+						property: property.address,
 						amount: utils.parseEther('2.999'),
 					}),
 					structRewards(),
