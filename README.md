@@ -41,3 +41,34 @@ module.exports = [
 ```bash
 yarn hardhat verify --network <NETWORK_NAME> <CONTRACT_ADDRESS> --contract <PATH_TO_CONTRACT>:<CONTRACT_NAME> --constructor-args ./scripts/arguments.js
 ```
+
+# Set images
+
+## Edit scripts/set-image.ts
+
+```ts
+const DEPLOYED_ADDRESS = '<DEPLOYED_SIMPLECOLLECTIONS>'
+const PROPERTY_ADDRESS = '<PROPERTY_ADDRESS>'
+const IMAGES: SimpleCollections.ImageStruct[] = [
+	{
+		src: 'ipfs://bafy...',
+		requiredETHAmount: utils.parseEther('0.3'),
+		requiredETHFee: utils.parseEther('0.03'),
+	},
+	{
+		src: 'ipfs://bafy...',
+		requiredETHAmount: utils.parseEther('0.3'),
+		requiredETHFee: utils.parseEther('0.03'),
+	},
+]
+const KEYS: Uint8Array[] = [
+	utils.toUtf8Bytes('The First Art'),
+	utils.toUtf8Bytes('The Second Art'),
+]
+```
+
+## Run the script
+
+```bash
+yarn hardhat run --network <NETWORK_NAME> scripts/set-images.ts
+```

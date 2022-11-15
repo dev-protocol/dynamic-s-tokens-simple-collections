@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { BigNumber, utils } from 'ethers'
+import { utils } from 'ethers'
 import { ethers } from 'hardhat'
 import type {
 	SimpleCollections,
@@ -7,11 +7,12 @@ import type {
 } from '../typechain-types'
 
 const DEPLOYED_ADDRESS = ''
+const PROPERTY_ADDRESS = ''
 const IMAGES: SimpleCollections.ImageStruct[] = [
 	{
 		src: '',
-		requiredETHAmount: BigNumber.from(0),
-		requiredETHFee: BigNumber.from(0),
+		requiredETHAmount: utils.parseEther('0'),
+		requiredETHFee: utils.parseEther('0'),
 	},
 ]
 const KEYS: Uint8Array[] = [utils.toUtf8Bytes('A'), utils.toUtf8Bytes('B')]
@@ -20,13 +21,9 @@ async function main() {
 	const contract = (await ethers.getContractFactory(
 		'SimpleCollections'
 	)) as SimpleCollections__factory
-	const [propertyAuthor] = await ethers.getSigners()
-	const property = await (
-		await ethers.getContractFactory('Property')
-	).deploy(propertyAuthor.address, 'Testing', 'TEST')
 	const deployedContract = contract.attach(DEPLOYED_ADDRESS)
 	await deployedContract.setImages(
-		property.address,
+		PROPERTY_ADDRESS,
 		IMAGES,
 		KEYS.map(utils.keccak256)
 	)
