@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { expect, use } from 'chai'
 import { ethers } from 'hardhat'
 import { solidity } from 'ethereum-waffle'
 import { deploy, deployProxy } from './utils'
 import type { SimpleCollections, UpgradeableProxy } from '../typechain-types'
+import { constants } from 'ethers'
 
 use(solidity)
 
@@ -39,11 +41,38 @@ describe('UpgradeableProxy', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(propertyAuthor.address, 'Testing', 'TEST')
-				await proxified.setGateway(property.address, gateway.address)
+				await proxified.setImages(
+					property.address,
+					[
+						{
+							src: 'SRC',
+							requiredETHAmount: constants.Zero,
+							requiredETHFee: constants.Zero,
+							gateway: gateway.address,
+						},
+					],
+					[constants.HashZero]
+				)
 				const nextImpl = await deploy<SimpleCollections>('SimpleCollections')
 				await proxy.upgradeTo(nextImpl.address)
-				const value = await proxified.gateway(property.address)
-				expect(value).to.equal(gateway.address)
+				const value = await proxified.image(
+					1,
+					constants.AddressZero,
+					{
+						property: property.address,
+						amount: constants.Zero,
+						price: constants.Zero,
+						cumulativeReward: constants.Zero,
+						pendingReward: constants.Zero,
+					},
+					{
+						entireReward: constants.Zero,
+						cumulativeReward: constants.Zero,
+						withdrawableReward: constants.Zero,
+					},
+					constants.HashZero
+				)
+				expect(value).to.equal('SRC')
 			})
 		})
 		describe('fail', () => {

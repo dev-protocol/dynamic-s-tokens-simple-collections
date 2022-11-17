@@ -13,6 +13,7 @@ const IMAGES: SimpleCollections.ImageStruct[] = [
 		src: '',
 		requiredETHAmount: utils.parseEther('0'),
 		requiredETHFee: utils.parseEther('0'),
+		gateway: '',
 	},
 ]
 const KEYS: Uint8Array[] = [utils.toUtf8Bytes('A'), utils.toUtf8Bytes('B')]

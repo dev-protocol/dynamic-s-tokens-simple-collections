@@ -54,11 +54,13 @@ const IMAGES: SimpleCollections.ImageStruct[] = [
 		src: 'ipfs://bafy...',
 		requiredETHAmount: utils.parseEther('0.3'),
 		requiredETHFee: utils.parseEther('0.03'),
+		gateway: '<YOUR_ADDRESS>',
 	},
 	{
 		src: 'ipfs://bafy...',
 		requiredETHAmount: utils.parseEther('0.3'),
 		requiredETHFee: utils.parseEther('0.03'),
+		gateway: '<YOUR_ADDRESS>',
 	},
 ]
 const KEYS: Uint8Array[] = [

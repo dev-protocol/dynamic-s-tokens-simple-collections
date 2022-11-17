@@ -12,10 +12,10 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		string src;
 		uint256 requiredETHAmount;
 		uint256 requiredETHFee;
+		address gateway;
 	}
 
 	ISwapAndStake public swapAndStake;
-	mapping(address => address) public gateway;
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
 
@@ -64,13 +64,6 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		delete propertyImages[_propertyAddress][_key];
 	}
 
-	function setGateway(
-		address _propertyAddress,
-		address _gateway
-	) external onlyPropertyAuthor(_propertyAddress) {
-		gateway[_propertyAddress] = _gateway;
-	}
-
 	function onBeforeMint(
 		uint256 id,
 		address,
@@ -81,8 +74,8 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 		// When not defined the key
 		if (
-			bytes(img.src).length == 0 ||
-			img.requiredETHAmount == 0 ||
+			bytes(img.src).length == 0 &&
+			img.requiredETHAmount == 0 &&
 			img.requiredETHFee == 0
 		) {
 			return false;
@@ -90,7 +83,7 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 		// Always only allow staking via the SwapAndStake contract.
 		ISwapAndStake.Amounts memory stakeVia = swapAndStake.gatewayOf(
-			gateway[_positions.property]
+			img.gateway
 		);
 
 		// Validate the staking position.
