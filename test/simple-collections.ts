@@ -581,6 +581,47 @@ describe('SimpleCollections', () => {
 
 				expect(res).to.equal('X_SRC')
 			})
+
+			it('returns correct image if the received bytes32 key is exists and its calling is simulations call', async () => {
+				const cont = await deployWithProxy<SimpleCollections>(
+					'SimpleCollections'
+				)
+				const swapAndStake = await (
+					await ethers.getContractFactory('SwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+				await cont.setGateway(property.address, gateway.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				await cont.setImages(
+					property.address,
+					[structImage('X_SRC', eth1, eth001)],
+					[x]
+				)
+
+				// In this test case, doesn't staked
+
+				const res = await cont.image(
+					9,
+					constants.AddressZero,
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3.1'),
+					}),
+					structRewards(),
+					x
+				)
+
+				expect(res).to.equal('X_SRC')
+			})
 		})
 		describe('fail', () => {
 			it('returns empty string if the received bytes32 key is not defined', async () => {
