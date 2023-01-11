@@ -96,4 +96,24 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 		return valid;
 	}
+
+	function name(
+		uint256,
+		address,
+		ISTokensManagerStruct.StakingPositions memory,
+		ISTokensManagerStruct.Rewards memory,
+		bytes32
+	) external pure returns (string memory) {
+		return "";
+	}
+
+	function description(
+		uint256,
+		address,
+		ISTokensManagerStruct.StakingPositions memory,
+		ISTokensManagerStruct.Rewards memory,
+		bytes32
+	) external pure returns (string memory) {
+		return "";
+	}
 }

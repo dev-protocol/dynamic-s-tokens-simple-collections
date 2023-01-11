@@ -48,7 +48,7 @@
 		"typescript": "4.9.4"
 	},
 	"dependencies": {
-		"@devprotocol/i-s-tokens": "2.2.0",
+		"@devprotocol/i-s-tokens": "3.0.1",
 		"@openzeppelin/contracts-upgradeable": "^4.4.2",
 		"@typechain/ethers-v5": "^10.0.0",
 		"@typechain/hardhat": "^6.0.0",
