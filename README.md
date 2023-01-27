@@ -1,4 +1,11 @@
-# template-repos-ts-sol
+# Dynamic sTokens Simple Collections
+
+## Deployed addresses
+
+| Chain           | SimpleCollections<br/>(UpgradeableProxy)     | Admin                                        |
+| --------------- | -------------------------------------------- | -------------------------------------------- |
+| Polygon Mumbai  | `0x6D9D177c7Aa936a3d6b6F95255Ed63ac6c4601c2` | `0xf48b103bd2E84117f2290ee0B3125865dbBcb96E` |
+| Polygon Mainnet | `0x007bfb81A0f4E8EEBC1D0570ad4dB6E04594bd43` | `0x427a5AEE6fdF21a1c1Dd2d711E1f8664F320c297` |
 
 # Installation
 
@@ -34,4 +41,37 @@ module.exports = [
 
 ```bash
 yarn hardhat verify --network <NETWORK_NAME> <CONTRACT_ADDRESS> --contract <PATH_TO_CONTRACT>:<CONTRACT_NAME> --constructor-args ./scripts/arguments.js
+```
+
+# Set images
+
+## Edit scripts/set-image.ts
+
+```ts
+const DEPLOYED_ADDRESS = '<DEPLOYED_SIMPLECOLLECTIONS>'
+const PROPERTY_ADDRESS = '<PROPERTY_ADDRESS>'
+const IMAGES: SimpleCollections.ImageStruct[] = [
+	{
+		src: 'ipfs://bafy...',
+		requiredETHAmount: utils.parseEther('0.3'),
+		requiredETHFee: utils.parseEther('0.03'),
+		gateway: '<YOUR_ADDRESS>',
+	},
+	{
+		src: 'ipfs://bafy...',
+		requiredETHAmount: utils.parseEther('0.3'),
+		requiredETHFee: utils.parseEther('0.03'),
+		gateway: '<YOUR_ADDRESS>',
+	},
+]
+const KEYS: Uint8Array[] = [
+	utils.toUtf8Bytes('The First Art'),
+	utils.toUtf8Bytes('The Second Art'),
+]
+```
+
+## Run the script
+
+```bash
+yarn hardhat run --network <NETWORK_NAME> scripts/set-images.ts
 ```

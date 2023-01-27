@@ -45,11 +45,13 @@ const structRewards = ({
 const structImage = (
 	src: string,
 	requiredETHAmount: BigNumberish,
-	requiredETHFee: BigNumberish
+	requiredETHFee: BigNumberish,
+	gateway: string
 ) => ({
 	src,
 	requiredETHAmount,
 	requiredETHFee,
+	gateway,
 })
 describe('SimpleCollections', () => {
 	describe('initialize', () => {
@@ -97,8 +99,8 @@ describe('SimpleCollections', () => {
 				await cont.setImages(
 					property.address,
 					[
-						structImage('X_SRC', eth1, eth001),
-						structImage('Y_SRC', eth1, eth001),
+						structImage('X_SRC', eth1, eth001, owner.address),
+						structImage('Y_SRC', eth1, eth001, owner.address),
 					],
 					[x, y]
 				)
@@ -131,7 +133,8 @@ describe('SimpleCollections', () => {
 								structImage(
 									'X_SRC',
 									utils.parseEther('1'),
-									utils.parseEther('0.01')
+									utils.parseEther('0.01'),
+									owner.address
 								),
 							],
 							[utils.keccak256(utils.toUtf8Bytes('X'))]
@@ -159,8 +162,8 @@ describe('SimpleCollections', () => {
 				await cont.setImages(
 					property.address,
 					[
-						structImage('X_SRC', eth1, eth001),
-						structImage('Y_SRC', eth1, eth001),
+						structImage('X_SRC', eth1, eth001, owner.address),
+						structImage('Y_SRC', eth1, eth001, owner.address),
 					],
 					[x, y]
 				)
@@ -194,8 +197,8 @@ describe('SimpleCollections', () => {
 				await cont.setImages(
 					property.address,
 					[
-						structImage('X_SRC', eth1, eth001),
-						structImage('Y_SRC', eth1, eth001),
+						structImage('X_SRC', eth1, eth001, owner.address),
+						structImage('Y_SRC', eth1, eth001, owner.address),
 					],
 					[x, y]
 				)
@@ -206,41 +209,6 @@ describe('SimpleCollections', () => {
 
 				await expect(
 					cont.connect(addr1).removeImage(property.address, x)
-				).to.be.revertedWith('illegal access')
-			})
-		})
-	})
-	describe('setGateway', () => {
-		describe('success', () => {
-			it('set the gateway', async () => {
-				const cont = await deployWithProxy<SimpleCollections>(
-					'SimpleCollections'
-				)
-				const [owner, swap, gateway] = await ethers.getSigners()
-				const property = await (
-					await ethers.getContractFactory('Property')
-				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swap.address)
-
-				await cont.setGateway(property.address, gateway.address)
-
-				expect(await cont.swapAndStake()).to.equal(swap.address)
-				expect(await cont.gateway(property.address)).to.equal(gateway.address)
-			})
-		})
-		describe('fail', () => {
-			it('should fail to call when the sender is not the owner', async () => {
-				const cont = await deployWithProxy<SimpleCollections>(
-					'SimpleCollections'
-				)
-				const [owner, addr1, swap, gateway] = await ethers.getSigners()
-				const property = await (
-					await ethers.getContractFactory('Property')
-				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swap.address)
-
-				await expect(
-					cont.connect(addr1).setGateway(property.address, gateway.address)
 				).to.be.revertedWith('illegal access')
 			})
 		})
@@ -261,14 +229,13 @@ describe('SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001)],
+					[structImage('X_SRC', eth1, eth001, gateway.address)],
 					[x]
 				)
 
@@ -301,14 +268,13 @@ describe('SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001)],
+					[structImage('X_SRC', eth1, eth001, gateway.address)],
 					[x]
 				)
 
@@ -342,14 +308,13 @@ describe('SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001)],
+					[structImage('X_SRC', eth1, eth001, gateway.address)],
 					[x]
 				)
 
@@ -379,14 +344,13 @@ describe('SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001)],
+					[structImage('X_SRC', eth1, eth001, gateway.address)],
 					[x]
 				)
 
@@ -416,14 +380,13 @@ describe('SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001)],
+					[structImage('X_SRC', eth1, eth001, gateway.address)],
 					[x]
 				)
 
@@ -453,14 +416,13 @@ describe('SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001)],
+					[structImage('X_SRC', eth1, eth001, gateway.address)],
 					[x]
 				)
 
@@ -496,14 +458,13 @@ describe('SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001)],
+					[structImage('X_SRC', eth1, eth001, gateway.address)],
 					[x]
 				)
 
@@ -546,14 +507,13 @@ describe('SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001)],
+					[structImage('X_SRC', eth1, eth001, gateway.address)],
 					[x]
 				)
 
@@ -567,6 +527,46 @@ describe('SimpleCollections', () => {
 					}),
 					x
 				)
+
+				const res = await cont.image(
+					9,
+					constants.AddressZero,
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3.1'),
+					}),
+					structRewards(),
+					x
+				)
+
+				expect(res).to.equal('X_SRC')
+			})
+
+			it('returns correct image if the received bytes32 key is exists and its calling is simulations call', async () => {
+				const cont = await deployWithProxy<SimpleCollections>(
+					'SimpleCollections'
+				)
+				const swapAndStake = await (
+					await ethers.getContractFactory('SwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				await cont.setImages(
+					property.address,
+					[structImage('X_SRC', eth1, eth001, gateway.address)],
+					[x]
+				)
+
+				// In this test case, doesn't staked
 
 				const res = await cont.image(
 					9,
@@ -598,14 +598,13 @@ describe('SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001)],
+					[structImage('X_SRC', eth1, eth001, gateway.address)],
 					[x]
 				)
 
@@ -649,14 +648,13 @@ describe('SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.setGateway(property.address, gateway.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001)],
+					[structImage('X_SRC', eth1, eth001, gateway.address)],
 					[x]
 				)
 

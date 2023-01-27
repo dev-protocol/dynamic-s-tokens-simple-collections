@@ -12,10 +12,10 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		string src;
 		uint256 requiredETHAmount;
 		uint256 requiredETHFee;
+		address gateway;
 	}
 
 	ISwapAndStake public swapAndStake;
-	mapping(address => address) public gateway;
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
 
@@ -43,7 +43,7 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	) external view returns (string memory) {
 		Image memory img = propertyImages[_positions.property][key];
 		uint256 stakedAtMinted = stakedAmountAtMinted[_positions.property][id];
-		if (stakedAtMinted > _positions.amount) {
+		if (_positions.price > 0 && stakedAtMinted > _positions.amount) {
 			return "";
 		}
 		return img.src;
@@ -61,18 +61,11 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		}
 	}
 
-	function removeImage(address _propertyAddress, bytes32 _key)
-		external
-		onlyPropertyAuthor(_propertyAddress)
-	{
+	function removeImage(
+		address _propertyAddress,
+		bytes32 _key
+	) external onlyPropertyAuthor(_propertyAddress) {
 		delete propertyImages[_propertyAddress][_key];
-	}
-
-	function setGateway(address _propertyAddress, address _gateway)
-		external
-		onlyPropertyAuthor(_propertyAddress)
-	{
-		gateway[_propertyAddress] = _gateway;
 	}
 
 	function onBeforeMint(
@@ -85,8 +78,8 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 		// When not defined the key
 		if (
-			bytes(img.src).length == 0 ||
-			img.requiredETHAmount == 0 ||
+			bytes(img.src).length == 0 &&
+			img.requiredETHAmount == 0 &&
 			img.requiredETHFee == 0
 		) {
 			return false;
@@ -94,7 +87,7 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 		// Always only allow staking via the SwapAndStake contract.
 		ISwapAndStake.Amounts memory stakeVia = swapAndStake.gatewayOf(
-			gateway[_positions.property]
+			img.gateway
 		);
 
 		// Validate the staking position.
@@ -106,5 +99,25 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		}
 
 		return valid;
+	}
+
+	function name(
+		uint256,
+		address,
+		ISTokensManagerStruct.StakingPositions memory,
+		ISTokensManagerStruct.Rewards memory,
+		bytes32
+	) external pure returns (string memory) {
+		return "";
+	}
+
+	function description(
+		uint256,
+		address,
+		ISTokensManagerStruct.StakingPositions memory,
+		ISTokensManagerStruct.Rewards memory,
+		bytes32
+	) external pure returns (string memory) {
+		return "";
 	}
 }
