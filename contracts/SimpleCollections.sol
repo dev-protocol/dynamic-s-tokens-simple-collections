@@ -30,6 +30,10 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		_;
 	}
 
+	function setSwapAndStake(address _contract) external onlyOwner {
+		swapAndStake = ISwapAndStake(_contract);
+	}
+
 	function image(
 		uint256 id,
 		address,

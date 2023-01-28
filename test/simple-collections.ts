@@ -684,4 +684,41 @@ describe('SimpleCollections', () => {
 			})
 		})
 	})
+	describe('setSwapAndStake', () => {
+		describe('success', () => {
+			it('can set swapAndStake', async () => {
+				const cont = await deployWithProxy<SimpleCollections>(
+					'SimpleCollections'
+				)
+				const [addr1, swapAndStake, swapAndStakeChanged] =
+					await ethers.getSigners()
+				await cont.initialize(swapAndStake.address)
+				const owner = await cont.owner()
+				expect(owner).to.equal(addr1.address)
+				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
+
+				// After setSwapAndStake
+				await cont.setSwapAndStake(swapAndStakeChanged.address)
+				expect(await cont.swapAndStake()).to.equal(swapAndStakeChanged.address)
+			})
+		})
+		describe('fail', () => {
+			it('cannot set swapAndStake if not owner', async () => {
+				const cont = await deployWithProxy<SimpleCollections>(
+					'SimpleCollections'
+				)
+				const [addr1, addr2, swapAndStake, swapAndStakeChanged] =
+					await ethers.getSigners()
+				await cont.initialize(swapAndStake.address)
+				const owner = await cont.owner()
+				expect(owner).to.equal(addr1.address)
+				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
+
+				// After setSwapAndStake
+				await expect(
+					cont.connect(addr2).setSwapAndStake(swapAndStakeChanged.address)
+				).to.be.revertedWith('Ownable: caller is not the owner')
+			})
+		})
+	})
 })
