@@ -10,6 +10,8 @@ import "./interfaces/ISwapAndStake.sol";
 contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	struct Image {
 		string src;
+		string name;
+		string description;
 		uint256 requiredETHAmount;
 		uint256 requiredETHFee;
 		address gateway;
@@ -47,6 +49,36 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 			return "";
 		}
 		return img.src;
+	}
+
+	function name(
+		uint256 id,
+		address,
+		ISTokensManagerStruct.StakingPositions memory _positions,
+		ISTokensManagerStruct.Rewards memory,
+		bytes32 key
+	) external view returns (string memory) {
+		Image memory img = propertyImages[_positions.property][key];
+		uint256 stakedAtMinted = stakedAmountAtMinted[_positions.property][id];
+		if (stakedAtMinted > _positions.amount) {
+			return "";
+		}
+		return img.name;
+	}
+
+	function description(
+		uint256 id,
+		address,
+		ISTokensManagerStruct.StakingPositions memory _positions,
+		ISTokensManagerStruct.Rewards memory,
+		bytes32 key
+	) external view returns (string memory) {
+		Image memory img = propertyImages[_positions.property][key];
+		uint256 stakedAtMinted = stakedAmountAtMinted[_positions.property][id];
+		if (stakedAtMinted > _positions.amount) {
+			return "";
+		}
+		return img.description;
 	}
 
 	function setImages(
@@ -99,25 +131,5 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		}
 
 		return valid;
-	}
-
-	function name(
-		uint256,
-		address,
-		ISTokensManagerStruct.StakingPositions memory,
-		ISTokensManagerStruct.Rewards memory,
-		bytes32
-	) external pure returns (string memory) {
-		return "";
-	}
-
-	function description(
-		uint256,
-		address,
-		ISTokensManagerStruct.StakingPositions memory,
-		ISTokensManagerStruct.Rewards memory,
-		bytes32
-	) external pure returns (string memory) {
-		return "";
 	}
 }

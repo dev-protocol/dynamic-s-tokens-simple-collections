@@ -11,6 +11,8 @@ const PROPERTY_ADDRESS = ''
 const IMAGES: SimpleCollections.ImageStruct[] = [
 	{
 		src: '',
+		name: '',
+		description: '',
 		requiredETHAmount: utils.parseEther('0'),
 		requiredETHFee: utils.parseEther('0'),
 		gateway: '',

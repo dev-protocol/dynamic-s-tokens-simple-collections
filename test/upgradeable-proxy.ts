@@ -46,6 +46,8 @@ describe('UpgradeableProxy', () => {
 					[
 						{
 							src: 'SRC',
+							name: 'NAME',
+							description: 'DESC',
 							requiredETHAmount: constants.Zero,
 							requiredETHFee: constants.Zero,
 							gateway: gateway.address,
