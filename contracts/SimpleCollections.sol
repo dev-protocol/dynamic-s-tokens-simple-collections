@@ -60,7 +60,7 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	) external view returns (string memory) {
 		Image memory img = propertyImages[_positions.property][key];
 		uint256 stakedAtMinted = stakedAmountAtMinted[_positions.property][id];
-		if (stakedAtMinted > _positions.amount) {
+		if (_positions.price > 0 && stakedAtMinted > _positions.amount) {
 			return "";
 		}
 		return img.name;
@@ -75,7 +75,7 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	) external view returns (string memory) {
 		Image memory img = propertyImages[_positions.property][key];
 		uint256 stakedAtMinted = stakedAmountAtMinted[_positions.property][id];
-		if (stakedAtMinted > _positions.amount) {
+		if (_positions.price > 0 && stakedAtMinted > _positions.amount) {
 			return "";
 		}
 		return img.description;
