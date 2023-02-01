@@ -4,8 +4,8 @@
 
 | Chain           | SimpleCollections<br/>(UpgradeableProxy)     | Admin                                        |
 | --------------- | -------------------------------------------- | -------------------------------------------- |
-| Polygon Mumbai  | `0x6D9D177c7Aa936a3d6b6F95255Ed63ac6c4601c2` | `0xf48b103bd2E84117f2290ee0B3125865dbBcb96E` |
-| Polygon Mainnet | `0x007bfb81A0f4E8EEBC1D0570ad4dB6E04594bd43` | `0x427a5AEE6fdF21a1c1Dd2d711E1f8664F320c297` |
+| Polygon Mumbai  | `0x672bA772beD905Ad9Ecb924bD9c47eAb156153C0` | `0x1d556338cc64304b41BAbeC0aF833E3181338026` |
+| Polygon Mainnet | `0xF235ff0A6B33e074daFd98bB4BD2b300c1561339` | `0xAFD8111ee1f9910ee42dfE7A8d129d8C7A8Ea466` |
 
 # Installation
 
