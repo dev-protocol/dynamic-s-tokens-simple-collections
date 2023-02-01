@@ -1,186 +1,186 @@
 {
-  "manifestVersion": "3.2",
-  "admin": {
-    "address": "0xAFD8111ee1f9910ee42dfE7A8d129d8C7A8Ea466",
-    "txHash": "0xb9a76466c6b8502fa58c540830a6298cf2fcf2832ff087697179f80263109ae2"
-  },
-  "proxies": [
-    {
-      "address": "0xF235ff0A6B33e074daFd98bB4BD2b300c1561339",
-      "txHash": "0x0868221a407b6f08b7515229fb231d1c718f2fb4e92096f69cff876f1dc46993",
-      "kind": "transparent"
-    }
-  ],
-  "impls": {
-    "0b5eafd32400a4e804a27ba6d0acdc1b357a6c186a67112aca9f67e338d018fa": {
-      "address": "0xB6F7d0063da5048D671886B1c55Fb8B6450E9C4d",
-      "txHash": "0xb6e0b6bfaef507e6dd82bd65b3ca4be192d28909d0f8d84dc427591769691d86",
-      "layout": {
-        "solcVersion": "0.8.9",
-        "storage": [
-          {
-            "label": "_initialized",
-            "offset": 0,
-            "slot": "0",
-            "type": "t_uint8",
-            "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
-            "retypedFrom": "bool"
-          },
-          {
-            "label": "_initializing",
-            "offset": 1,
-            "slot": "0",
-            "type": "t_bool",
-            "contract": "Initializable",
-            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "1",
-            "type": "t_array(t_uint256)50_storage",
-            "contract": "ContextUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
-          },
-          {
-            "label": "_owner",
-            "offset": 0,
-            "slot": "51",
-            "type": "t_address",
-            "contract": "OwnableUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
-          },
-          {
-            "label": "__gap",
-            "offset": 0,
-            "slot": "52",
-            "type": "t_array(t_uint256)49_storage",
-            "contract": "OwnableUpgradeable",
-            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:94"
-          },
-          {
-            "label": "swapAndStake",
-            "offset": 0,
-            "slot": "101",
-            "type": "t_contract(ISwapAndStake)3156",
-            "contract": "SimpleCollections",
-            "src": "contracts/SimpleCollections.sol:20"
-          },
-          {
-            "label": "propertyImages",
-            "offset": 0,
-            "slot": "102",
-            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)2685_storage))",
-            "contract": "SimpleCollections",
-            "src": "contracts/SimpleCollections.sol:21"
-          },
-          {
-            "label": "stakedAmountAtMinted",
-            "offset": 0,
-            "slot": "103",
-            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
-            "contract": "SimpleCollections",
-            "src": "contracts/SimpleCollections.sol:22"
-          }
-        ],
-        "types": {
-          "t_address": {
-            "label": "address",
-            "numberOfBytes": "20"
-          },
-          "t_array(t_uint256)49_storage": {
-            "label": "uint256[49]",
-            "numberOfBytes": "1568"
-          },
-          "t_array(t_uint256)50_storage": {
-            "label": "uint256[50]",
-            "numberOfBytes": "1600"
-          },
-          "t_bool": {
-            "label": "bool",
-            "numberOfBytes": "1"
-          },
-          "t_bytes32": {
-            "label": "bytes32",
-            "numberOfBytes": "32"
-          },
-          "t_contract(ISwapAndStake)3156": {
-            "label": "contract ISwapAndStake",
-            "numberOfBytes": "20"
-          },
-          "t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)2685_storage))": {
-            "label": "mapping(address => mapping(bytes32 => struct SimpleCollections.Image))",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
-            "label": "mapping(address => mapping(uint256 => uint256))",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_bytes32,t_struct(Image)2685_storage)": {
-            "label": "mapping(bytes32 => struct SimpleCollections.Image)",
-            "numberOfBytes": "32"
-          },
-          "t_mapping(t_uint256,t_uint256)": {
-            "label": "mapping(uint256 => uint256)",
-            "numberOfBytes": "32"
-          },
-          "t_string_storage": {
-            "label": "string",
-            "numberOfBytes": "32"
-          },
-          "t_struct(Image)2685_storage": {
-            "label": "struct SimpleCollections.Image",
-            "members": [
-              {
-                "label": "src",
-                "type": "t_string_storage",
-                "offset": 0,
-                "slot": "0"
-              },
-              {
-                "label": "name",
-                "type": "t_string_storage",
-                "offset": 0,
-                "slot": "1"
-              },
-              {
-                "label": "description",
-                "type": "t_string_storage",
-                "offset": 0,
-                "slot": "2"
-              },
-              {
-                "label": "requiredETHAmount",
-                "type": "t_uint256",
-                "offset": 0,
-                "slot": "3"
-              },
-              {
-                "label": "requiredETHFee",
-                "type": "t_uint256",
-                "offset": 0,
-                "slot": "4"
-              },
-              {
-                "label": "gateway",
-                "type": "t_address",
-                "offset": 0,
-                "slot": "5"
-              }
-            ],
-            "numberOfBytes": "192"
-          },
-          "t_uint256": {
-            "label": "uint256",
-            "numberOfBytes": "32"
-          },
-          "t_uint8": {
-            "label": "uint8",
-            "numberOfBytes": "1"
-          }
-        }
-      }
-    }
-  }
+	"manifestVersion": "3.2",
+	"admin": {
+		"address": "0xAFD8111ee1f9910ee42dfE7A8d129d8C7A8Ea466",
+		"txHash": "0xb9a76466c6b8502fa58c540830a6298cf2fcf2832ff087697179f80263109ae2"
+	},
+	"proxies": [
+		{
+			"address": "0xF235ff0A6B33e074daFd98bB4BD2b300c1561339",
+			"txHash": "0x0868221a407b6f08b7515229fb231d1c718f2fb4e92096f69cff876f1dc46993",
+			"kind": "transparent"
+		}
+	],
+	"impls": {
+		"0b5eafd32400a4e804a27ba6d0acdc1b357a6c186a67112aca9f67e338d018fa": {
+			"address": "0xB6F7d0063da5048D671886B1c55Fb8B6450E9C4d",
+			"txHash": "0xb6e0b6bfaef507e6dd82bd65b3ca4be192d28909d0f8d84dc427591769691d86",
+			"layout": {
+				"solcVersion": "0.8.9",
+				"storage": [
+					{
+						"label": "_initialized",
+						"offset": 0,
+						"slot": "0",
+						"type": "t_uint8",
+						"contract": "Initializable",
+						"src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+						"retypedFrom": "bool"
+					},
+					{
+						"label": "_initializing",
+						"offset": 1,
+						"slot": "0",
+						"type": "t_bool",
+						"contract": "Initializable",
+						"src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+					},
+					{
+						"label": "__gap",
+						"offset": 0,
+						"slot": "1",
+						"type": "t_array(t_uint256)50_storage",
+						"contract": "ContextUpgradeable",
+						"src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+					},
+					{
+						"label": "_owner",
+						"offset": 0,
+						"slot": "51",
+						"type": "t_address",
+						"contract": "OwnableUpgradeable",
+						"src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+					},
+					{
+						"label": "__gap",
+						"offset": 0,
+						"slot": "52",
+						"type": "t_array(t_uint256)49_storage",
+						"contract": "OwnableUpgradeable",
+						"src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:94"
+					},
+					{
+						"label": "swapAndStake",
+						"offset": 0,
+						"slot": "101",
+						"type": "t_contract(ISwapAndStake)3156",
+						"contract": "SimpleCollections",
+						"src": "contracts/SimpleCollections.sol:20"
+					},
+					{
+						"label": "propertyImages",
+						"offset": 0,
+						"slot": "102",
+						"type": "t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)2685_storage))",
+						"contract": "SimpleCollections",
+						"src": "contracts/SimpleCollections.sol:21"
+					},
+					{
+						"label": "stakedAmountAtMinted",
+						"offset": 0,
+						"slot": "103",
+						"type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+						"contract": "SimpleCollections",
+						"src": "contracts/SimpleCollections.sol:22"
+					}
+				],
+				"types": {
+					"t_address": {
+						"label": "address",
+						"numberOfBytes": "20"
+					},
+					"t_array(t_uint256)49_storage": {
+						"label": "uint256[49]",
+						"numberOfBytes": "1568"
+					},
+					"t_array(t_uint256)50_storage": {
+						"label": "uint256[50]",
+						"numberOfBytes": "1600"
+					},
+					"t_bool": {
+						"label": "bool",
+						"numberOfBytes": "1"
+					},
+					"t_bytes32": {
+						"label": "bytes32",
+						"numberOfBytes": "32"
+					},
+					"t_contract(ISwapAndStake)3156": {
+						"label": "contract ISwapAndStake",
+						"numberOfBytes": "20"
+					},
+					"t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)2685_storage))": {
+						"label": "mapping(address => mapping(bytes32 => struct SimpleCollections.Image))",
+						"numberOfBytes": "32"
+					},
+					"t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
+						"label": "mapping(address => mapping(uint256 => uint256))",
+						"numberOfBytes": "32"
+					},
+					"t_mapping(t_bytes32,t_struct(Image)2685_storage)": {
+						"label": "mapping(bytes32 => struct SimpleCollections.Image)",
+						"numberOfBytes": "32"
+					},
+					"t_mapping(t_uint256,t_uint256)": {
+						"label": "mapping(uint256 => uint256)",
+						"numberOfBytes": "32"
+					},
+					"t_string_storage": {
+						"label": "string",
+						"numberOfBytes": "32"
+					},
+					"t_struct(Image)2685_storage": {
+						"label": "struct SimpleCollections.Image",
+						"members": [
+							{
+								"label": "src",
+								"type": "t_string_storage",
+								"offset": 0,
+								"slot": "0"
+							},
+							{
+								"label": "name",
+								"type": "t_string_storage",
+								"offset": 0,
+								"slot": "1"
+							},
+							{
+								"label": "description",
+								"type": "t_string_storage",
+								"offset": 0,
+								"slot": "2"
+							},
+							{
+								"label": "requiredETHAmount",
+								"type": "t_uint256",
+								"offset": 0,
+								"slot": "3"
+							},
+							{
+								"label": "requiredETHFee",
+								"type": "t_uint256",
+								"offset": 0,
+								"slot": "4"
+							},
+							{
+								"label": "gateway",
+								"type": "t_address",
+								"offset": 0,
+								"slot": "5"
+							}
+						],
+						"numberOfBytes": "192"
+					},
+					"t_uint256": {
+						"label": "uint256",
+						"numberOfBytes": "32"
+					},
+					"t_uint8": {
+						"label": "uint8",
+						"numberOfBytes": "1"
+					}
+				}
+			}
+		}
+	}
 }
