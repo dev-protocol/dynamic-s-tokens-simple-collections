@@ -44,11 +44,15 @@ const structRewards = ({
 })
 const structImage = (
 	src: string,
+	name: string,
+	description: string,
 	requiredETHAmount: BigNumberish,
 	requiredETHFee: BigNumberish,
 	gateway: string
 ) => ({
 	src,
+	name,
+	description,
 	requiredETHAmount,
 	requiredETHFee,
 	gateway,
@@ -99,17 +103,35 @@ describe('SimpleCollections', () => {
 				await cont.setImages(
 					property.address,
 					[
-						structImage('X_SRC', eth1, eth001, owner.address),
-						structImage('Y_SRC', eth1, eth001, owner.address),
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							owner.address
+						),
+						structImage(
+							'Y_SRC',
+							'Y_NAME',
+							'Y_DESC',
+							eth1,
+							eth001,
+							owner.address
+						),
 					],
 					[x, y]
 				)
 				const image1 = await cont.propertyImages(property.address, x)
 				const image2 = await cont.propertyImages(property.address, y)
 				expect(image1.src).to.equal('X_SRC')
+				expect(image1.name).to.equal('X_NAME')
+				expect(image1.description).to.equal('X_DESC')
 				expect(image1.requiredETHAmount).to.equal(eth1)
 				expect(image1.requiredETHFee).to.equal(eth001)
 				expect(image2.src).to.equal('Y_SRC')
+				expect(image2.name).to.equal('Y_NAME')
+				expect(image2.description).to.equal('Y_DESC')
 				expect(image2.requiredETHAmount).to.equal(eth1)
 				expect(image2.requiredETHFee).to.equal(eth001)
 			})
@@ -132,6 +154,8 @@ describe('SimpleCollections', () => {
 							[
 								structImage(
 									'X_SRC',
+									'X_NAME',
+									'X_DESC',
 									utils.parseEther('1'),
 									utils.parseEther('0.01'),
 									owner.address
@@ -162,8 +186,22 @@ describe('SimpleCollections', () => {
 				await cont.setImages(
 					property.address,
 					[
-						structImage('X_SRC', eth1, eth001, owner.address),
-						structImage('Y_SRC', eth1, eth001, owner.address),
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							owner.address
+						),
+						structImage(
+							'Y_SRC',
+							'Y_NAME',
+							'Y_DESC',
+							eth1,
+							eth001,
+							owner.address
+						),
 					],
 					[x, y]
 				)
@@ -172,11 +210,25 @@ describe('SimpleCollections', () => {
 					'X_SRC'
 				)
 
+				expect((await cont.propertyImages(property.address, x)).name).to.equal(
+					'X_NAME'
+				)
+
+				expect(
+					(await cont.propertyImages(property.address, x)).description
+				).to.equal('X_DESC')
+
 				await cont.removeImage(property.address, x)
 
 				expect((await cont.propertyImages(property.address, x)).src).to.equal(
 					''
 				)
+				expect((await cont.propertyImages(property.address, x)).name).to.equal(
+					''
+				)
+				expect(
+					(await cont.propertyImages(property.address, x)).description
+				).to.equal('')
 			})
 		})
 		describe('fail', () => {
@@ -197,8 +249,22 @@ describe('SimpleCollections', () => {
 				await cont.setImages(
 					property.address,
 					[
-						structImage('X_SRC', eth1, eth001, owner.address),
-						structImage('Y_SRC', eth1, eth001, owner.address),
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							owner.address
+						),
+						structImage(
+							'Y_SRC',
+							'Y_NAME',
+							'Y_DESC',
+							eth1,
+							eth001,
+							owner.address
+						),
 					],
 					[x, y]
 				)
@@ -206,6 +272,14 @@ describe('SimpleCollections', () => {
 				expect((await cont.propertyImages(property.address, x)).src).to.equal(
 					'X_SRC'
 				)
+
+				expect((await cont.propertyImages(property.address, x)).name).to.equal(
+					'X_NAME'
+				)
+
+				expect(
+					(await cont.propertyImages(property.address, x)).description
+				).to.equal('X_DESC')
 
 				await expect(
 					cont.connect(addr1).removeImage(property.address, x)
@@ -235,7 +309,16 @@ describe('SimpleCollections', () => {
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001, gateway.address)],
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							gateway.address
+						),
+					],
 					[x]
 				)
 
@@ -274,7 +357,16 @@ describe('SimpleCollections', () => {
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001, gateway.address)],
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							gateway.address
+						),
+					],
 					[x]
 				)
 
@@ -314,7 +406,16 @@ describe('SimpleCollections', () => {
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001, gateway.address)],
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							gateway.address
+						),
+					],
 					[x]
 				)
 
@@ -350,7 +451,16 @@ describe('SimpleCollections', () => {
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001, gateway.address)],
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							gateway.address
+						),
+					],
 					[x]
 				)
 
@@ -386,7 +496,16 @@ describe('SimpleCollections', () => {
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001, gateway.address)],
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							gateway.address
+						),
+					],
 					[x]
 				)
 
@@ -422,7 +541,16 @@ describe('SimpleCollections', () => {
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001, gateway.address)],
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							gateway.address
+						),
+					],
 					[x]
 				)
 
@@ -464,7 +592,16 @@ describe('SimpleCollections', () => {
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001, gateway.address)],
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							gateway.address
+						),
+					],
 					[x]
 				)
 
@@ -479,7 +616,7 @@ describe('SimpleCollections', () => {
 					x
 				)
 
-				const res = await cont.image(
+				const image = await cont.image(
 					9,
 					constants.AddressZero,
 					structPositions({
@@ -490,7 +627,31 @@ describe('SimpleCollections', () => {
 					x
 				)
 
-				expect(res).to.equal('X_SRC')
+				const name = await cont.name(
+					9,
+					constants.AddressZero,
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					structRewards(),
+					x
+				)
+
+				const description = await cont.description(
+					9,
+					constants.AddressZero,
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					structRewards(),
+					x
+				)
+
+				expect(image).to.equal('X_SRC')
+				expect(name).to.equal('X_NAME')
+				expect(description).to.equal('X_DESC')
 			})
 
 			it('returns correct image if the received bytes32 key is exists and staked amount is increased', async () => {
@@ -513,7 +674,16 @@ describe('SimpleCollections', () => {
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001, gateway.address)],
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							gateway.address
+						),
+					],
 					[x]
 				)
 
@@ -528,18 +698,42 @@ describe('SimpleCollections', () => {
 					x
 				)
 
-				const res = await cont.image(
+				const image = await cont.image(
 					9,
 					constants.AddressZero,
 					structPositions({
 						property: property.address,
-						amount: utils.parseEther('3.1'),
+						amount: utils.parseEther('3'),
 					}),
 					structRewards(),
 					x
 				)
 
-				expect(res).to.equal('X_SRC')
+				const name = await cont.name(
+					9,
+					constants.AddressZero,
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					structRewards(),
+					x
+				)
+
+				const description = await cont.description(
+					9,
+					constants.AddressZero,
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					structRewards(),
+					x
+				)
+
+				expect(image).to.equal('X_SRC')
+				expect(name).to.equal('X_NAME')
+				expect(description).to.equal('X_DESC')
 			})
 
 			it('returns correct image if the received bytes32 key is exists and its calling is simulations call', async () => {
@@ -562,24 +756,57 @@ describe('SimpleCollections', () => {
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001, gateway.address)],
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							gateway.address
+						),
+					],
 					[x]
 				)
 
 				// In this test case, doesn't staked
 
-				const res = await cont.image(
+				const image = await cont.image(
 					9,
 					constants.AddressZero,
 					structPositions({
 						property: property.address,
-						amount: utils.parseEther('3.1'),
+						amount: utils.parseEther('3'),
 					}),
 					structRewards(),
 					x
 				)
 
-				expect(res).to.equal('X_SRC')
+				const name = await cont.name(
+					9,
+					constants.AddressZero,
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					structRewards(),
+					x
+				)
+
+				const description = await cont.description(
+					9,
+					constants.AddressZero,
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					structRewards(),
+					x
+				)
+
+				expect(image).to.equal('X_SRC')
+				expect(name).to.equal('X_NAME')
+				expect(description).to.equal('X_DESC')
 			})
 		})
 		describe('fail', () => {
@@ -604,7 +831,16 @@ describe('SimpleCollections', () => {
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001, gateway.address)],
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							gateway.address
+						),
+					],
 					[x]
 				)
 
@@ -654,7 +890,16 @@ describe('SimpleCollections', () => {
 				const eth001 = utils.parseEther('0.01')
 				await cont.setImages(
 					property.address,
-					[structImage('X_SRC', eth1, eth001, gateway.address)],
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							gateway.address
+						),
+					],
 					[x]
 				)
 
