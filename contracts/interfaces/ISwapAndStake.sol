@@ -8,5 +8,9 @@ interface ISwapAndStake {
 		uint256 fee;
 	}
 
+	function getEstimatedEthForDev(
+		uint256 devAmount
+	) external returns (uint256);
+
 	function gatewayOf(address _addr) external view returns (Amounts memory);
 }
