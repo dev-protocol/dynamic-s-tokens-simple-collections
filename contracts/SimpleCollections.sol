@@ -117,12 +117,30 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 			return false;
 		}
 
-		// Fetch the `amount of ETH` the `DEV staked` is equal to.
-		uint256 equivalentETHStaked = swapAndStake.getEstimatedEthForDev(
-			_positions.amount
-		);
 		// Validate the staking position.
-		bool valid = img.requiredETHAmount <= equivalentETHStaked;
+		bool valid = false;
+
+		// `requiredETHFee` will be 0 when using direct `DEV` otherwise it's assumed
+		// that input currency is `ETH`.
+		if (img.requiredETHFee > 0) {
+			// This condition validates input user ETH and fee.
+			// Always only allow staking via the SwapAndStake contract.
+			ISwapAndStake.Amounts memory stakeVia = swapAndStake.gatewayOf(
+				img.gateway
+			);
+
+			valid =
+				img.requiredETHAmount <= stakeVia.input &&
+				img.requiredETHFee <= stakeVia.fee;
+		} else {
+			// This condition validates input `DEV` equivalent `ETH` with required.
+			// Fetch the `amount of ETH` the `DEV staked` is equal to.
+			uint256 equivalentETHStaked = swapAndStake.getEstimatedEthForDev(
+				_positions.amount
+			);
+
+			valid = img.requiredETHAmount <= equivalentETHStaked;
+		}
 
 		if (valid) {
 			stakedAmountAtMinted[_positions.property][id] = _positions.amount;
