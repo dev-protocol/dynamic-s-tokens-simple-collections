@@ -6,6 +6,7 @@ import "@devprotocol/i-s-tokens/contracts/interfaces/ISTokensManagerStruct.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "./interfaces/IProperty.sol";
 import "./interfaces/ISwapAndStake.sol";
+import "@uniswap/v3-periphery/contracts/libraries/OracleLibrary.sol";
 
 contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	struct Image {
@@ -17,10 +18,12 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		address gateway;
 	}
 
-	address public devEthUniV3Pool;
 	ISwapAndStake public swapAndStake;
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
+
+	uint32 public lookbackSec = 300; // 5 minutes
+	address public devEthUniV3Pool;
 
 	function initialize(address _contract) external initializer {
 		__Ownable_init();
@@ -39,6 +42,10 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 	function setDevEthUniV3Pool(address _pool) external onlyOwner {
 		devEthUniV3Pool = _pool;
+	}
+
+	function setLookbackSec(uint32 _lookbackSec) external onlyOwner {
+		lookbackSec = _lookbackSec;
 	}
 
 	function image(
@@ -139,9 +146,20 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 				img.requiredETHFee <= stakeVia.fee;
 		} else {
 			// This condition validates input `DEV` equivalent `ETH` with required.
+
+			// Get the average price tick first
+			(int24 arithmeticMeanTick, ) = OracleLibrary.consult(
+				devEthUniV3Pool,
+				lookbackSec
+			);
+
+			// Get the quote for selling `DEV staked`. Assumes 1e18 for both.
 			// Fetch the `amount of ETH` the `DEV staked` is equal to.
-			uint256 equivalentETHStaked = swapAndStake.getEstimatedEthForDev(
-				_positions.amount
+			uint256 equivalentETHStaked = OracleLibrary.getQuoteAtTick(
+				arithmeticMeanTick,
+				_positions.amount,
+				swapAndStake.devAddress(), // Fetch the `DEV token address` for this chain and setting from swapAndStake.
+				swapAndStake.wethAddress() // Fetch the `WETH token address` for this chain and setting from swapAndStake.
 			);
 
 			valid = img.requiredETHAmount <= equivalentETHStaked;
