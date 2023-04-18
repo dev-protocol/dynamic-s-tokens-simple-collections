@@ -17,6 +17,7 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		address gateway;
 	}
 
+	address public devEthUniV3Pool;
 	ISwapAndStake public swapAndStake;
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
@@ -34,6 +35,10 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 	function setSwapAndStake(address _contract) external onlyOwner {
 		swapAndStake = ISwapAndStake(_contract);
+	}
+
+	function setDevEthUniV3Pool(address _pool) external onlyOwner {
+		devEthUniV3Pool = _pool;
 	}
 
 	function image(
