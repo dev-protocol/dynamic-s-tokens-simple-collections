@@ -22,7 +22,8 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	ISwapAndStake public swapAndStake;
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
-	mapping(address => mapping(bytes32 => uint32)) public propertyImageClaimedSlots;
+	mapping(address => mapping(bytes32 => uint32))
+		public propertyImageClaimedSlots;
 
 	function initialize(address _contract) external initializer {
 		__Ownable_init();
@@ -110,15 +111,17 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		bytes32 key
 	) external returns (bool) {
 		Image memory img = propertyImages[_positions.property][key];
-		require(img.slots > propertyImageClaimedSlots[_positions.property][key],"claim limit exhausted");
+		require(
+			img.slots > propertyImageClaimedSlots[_positions.property][key],
+			"claim limit exhausted"
+		);
 
 		// When key, slots are not defined or slots are full already
 		if (
 			bytes(img.src).length == 0 &&
 			img.requiredETHAmount == 0 &&
 			img.requiredETHFee == 0 &&
-			img.slots == 0 
-			
+			img.slots == 0
 		) {
 			return false;
 		}
