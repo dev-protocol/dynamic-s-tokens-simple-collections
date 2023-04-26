@@ -12,8 +12,7 @@ contract TimeCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		string src;
 		string name;
 		string description;
-		// using the current rule unix time is represented as 32bit number
-		uint32 deadline;
+		uint256 deadline;
 		uint256 requiredETHAmount;
 		uint256 requiredETHFee;
 		address gateway;

@@ -116,7 +116,7 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 			"claim limit exhausted"
 		);
 
-		// When key, slots are not defined or slots are full already
+		// When key, slots are not defined or 0 slots
 		if (
 			bytes(img.src).length == 0 &&
 			img.requiredETHAmount == 0 &&
@@ -141,5 +141,20 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		}
 
 		return valid;
+	}
+
+	// some function to make off-chain call to get the remaining slots
+	function getSlotsLeft(
+		address _property,
+		bytes32 _key
+	) external view returns (uint256) {
+		Image memory img = propertyImages[_property][_key];
+		if (
+			img.slots == 0 ||
+			img.slots == propertyImageClaimedSlots[_property][_key]
+		) {
+			return 0;
+		}
+		return img.slots - propertyImageClaimedSlots[_property][_key];
 	}
 }
