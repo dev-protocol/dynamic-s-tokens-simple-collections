@@ -108,13 +108,13 @@ contract TimeCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		bytes32 key
 	) external returns (bool) {
 		Image memory img = propertyImages[_positions.property][key];
+		// solhint-disable-next-line not-rely-on-time
+		require(img.deadline > block.timestamp, "deadline expired");
 
-		// When key, deadline is not defined or deadline has expired then not allowed to mint.
+		// When key, deadline is not defined or deadline is expired, it is not allowed to mint.
 		if (
 			bytes(img.src).length == 0 &&
 			img.deadline == 0 &&
-			// solhint-disable-next-line not-rely-on-time
-			img.deadline < block.timestamp &&
 			img.requiredETHAmount == 0 &&
 			img.requiredETHFee == 0
 		) {
