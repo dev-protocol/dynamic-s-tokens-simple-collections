@@ -7,13 +7,13 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "./interfaces/IProperty.sol";
 import "./interfaces/ISwapAndStake.sol";
 
-contract TimeCollections is ITokenURIDescriptor, OwnableUpgradeable {
+contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	struct Image {
 		string src;
 		string name;
 		string description;
-		// using the current rule unix time is represented as 32bit number
-		uint32 deadline;
+		// number of slots a image can have
+		uint32 slots;
 		uint256 requiredETHAmount;
 		uint256 requiredETHFee;
 		address gateway;
@@ -22,6 +22,7 @@ contract TimeCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	ISwapAndStake public swapAndStake;
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
+	mapping(address => mapping(bytes32 => uint32)) public propertyImageClaimedSlots;
 
 	function initialize(address _contract) external initializer {
 		__Ownable_init();
@@ -109,15 +110,15 @@ contract TimeCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		bytes32 key
 	) external returns (bool) {
 		Image memory img = propertyImages[_positions.property][key];
+		require(img.slots > propertyImageClaimedSlots[_positions.property][key],"claim limit exhausted");
 
-		// When key, deadline is not defined or deadline has expired then not allowed to mint.
+		// When key, slots are not defined or slots are full already
 		if (
 			bytes(img.src).length == 0 &&
-			img.deadline == 0 &&
-			// solhint-disable-next-line not-rely-on-time
-			img.deadline < block.timestamp &&
 			img.requiredETHAmount == 0 &&
-			img.requiredETHFee == 0
+			img.requiredETHFee == 0 &&
+			img.slots == 0 
+			
 		) {
 			return false;
 		}
@@ -133,25 +134,9 @@ contract TimeCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 		if (valid) {
 			stakedAmountAtMinted[_positions.property][id] = _positions.amount;
+			propertyImageClaimedSlots[_positions.property][key]++;
 		}
 
 		return valid;
-	}
-
-	// some function to make off-chain calls to confirm the staking is possible by calling onBeforeMint
-	function getTimeLeft(
-		address _property,
-		bytes32 _key
-	) external view returns (uint256) {
-		Image memory img = propertyImages[_property][_key];
-		if (img.deadline == 0) {
-			return 0;
-		}
-		// solhint-disable-next-line not-rely-on-time
-		if (img.deadline < block.timestamp) {
-			return 0;
-		}
-		// solhint-disable-next-line not-rely-on-time
-		return img.deadline - block.timestamp;
 	}
 }
