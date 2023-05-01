@@ -6,7 +6,7 @@ import "@devprotocol/i-s-tokens/contracts/interfaces/ISTokensManagerStruct.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "./interfaces/IProperty.sol";
 import "./interfaces/ISwapAndStake.sol";
-import "@uniswap/v3-periphery/contracts/libraries/OracleLibrary.sol";
+import "./utils/uniswapV3/libraries/OracleLibrary.sol";
 
 contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	struct Image {
@@ -157,7 +157,7 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 			// Fetch the `amount of ETH` the `DEV staked` is equal to.
 			uint256 equivalentETHStaked = OracleLibrary.getQuoteAtTick(
 				arithmeticMeanTick,
-				_positions.amount,
+				uint128(_positions.amount),
 				swapAndStake.devAddress(), // Fetch the `DEV token address` for this chain and setting from swapAndStake.
 				swapAndStake.wethAddress() // Fetch the `WETH token address` for this chain and setting from swapAndStake.
 			);
