@@ -8,5 +8,9 @@ interface ISwapAndStake {
 		uint256 fee;
 	}
 
+	function wethAddress() external view returns (address);
+
+	function devAddress() external view returns (address);
+
 	function gatewayOf(address _addr) external view returns (Amounts memory);
 }
