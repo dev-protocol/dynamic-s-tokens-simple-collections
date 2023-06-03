@@ -111,10 +111,6 @@ contract MembersCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		bytes32 key
 	) external returns (bool) {
 		Image memory img = propertyImages[_positions.property][key];
-		require(
-			img.slots > propertyImageClaimedSlots[_positions.property][key],
-			"claim limit exhausted"
-		);
 
 		// When key, slots are not defined or 0 slots
 		if (
@@ -123,6 +119,10 @@ contract MembersCollections is ITokenURIDescriptor, OwnableUpgradeable {
 			img.requiredETHFee == 0 &&
 			img.slots == 0
 		) {
+			return false;
+		}
+
+		if (img.slots <= propertyImageClaimedSlots[_positions.property][key]) {
 			return false;
 		}
 
