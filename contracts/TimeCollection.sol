@@ -108,10 +108,8 @@ contract TimeCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		bytes32 key
 	) external returns (bool) {
 		Image memory img = propertyImages[_positions.property][key];
-		// solhint-disable-next-line not-rely-on-time
-		require(img.deadline > block.timestamp, "deadline expired");
 
-		// When key, deadline is not defined or deadline is expired, it is not allowed to mint.
+		// When not defined the key
 		if (
 			bytes(img.src).length == 0 &&
 			img.deadline == 0 &&
@@ -120,7 +118,10 @@ contract TimeCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		) {
 			return false;
 		}
-
+		// solhint-disable-next-line not-rely-on-time
+		if(img.deadline < block.timestamp) {
+			return false;
+		}
 		// Always only allow staking via the SwapAndStake contract.
 		ISwapAndStake.Amounts memory stakeVia = swapAndStake.gatewayOf(
 			img.gateway
@@ -137,7 +138,7 @@ contract TimeCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		return valid;
 	}
 
-	// some function to make off-chain calls to confirm the staking is possible by calling onBeforeMint
+	// get time left
 	function getTimeLeft(
 		address _property,
 		bytes32 _key

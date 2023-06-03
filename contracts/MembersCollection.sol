@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "./interfaces/IProperty.sol";
 import "./interfaces/ISwapAndStake.sol";
 
-contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
+contract MembersCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	struct Image {
 		string src;
 		string name;
