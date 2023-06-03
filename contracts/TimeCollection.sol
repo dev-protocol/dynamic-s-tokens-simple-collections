@@ -119,7 +119,7 @@ contract TimeCollections is ITokenURIDescriptor, OwnableUpgradeable {
 			return false;
 		}
 		// solhint-disable-next-line not-rely-on-time
-		if(img.deadline < block.timestamp) {
+		if (img.deadline < block.timestamp) {
 			return false;
 		}
 		// Always only allow staking via the SwapAndStake contract.

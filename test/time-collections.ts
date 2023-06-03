@@ -321,8 +321,9 @@ describe('TimeCollections', () => {
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				const currentBlock = await ethers.provider.getBlockNumber();
-				const deadline1 = (await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
 				await cont.setImages(
 					property.address,
 					[
@@ -369,8 +370,9 @@ describe('TimeCollections', () => {
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				const currentBlock = await ethers.provider.getBlockNumber();
-				const deadline1 = (await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
 				await cont.setImages(
 					property.address,
 					[
@@ -386,7 +388,7 @@ describe('TimeCollections', () => {
 					],
 					[x]
 				)
-				await ethers.provider.send("evm_increaseTime", [3600])
+				await ethers.provider.send('evm_increaseTime', [3600])
 				// Function call is a on-chain call, hence no need to manually mine the blocktime
 				await swapAndStake.__mock(
 					9,
@@ -421,8 +423,9 @@ describe('TimeCollections', () => {
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				const currentBlock = await ethers.provider.getBlockNumber();
-				const deadline1 = (await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
 				await cont.setImages(
 					property.address,
 					[
@@ -438,11 +441,14 @@ describe('TimeCollections', () => {
 					],
 					[x]
 				)
-				const currentBlock2 = await ethers.provider.getBlockNumber();
-				const currentTime = (await ethers.provider.getBlock(currentBlock2)).timestamp
-				await ethers.provider.send("evm_setNextBlockTimestamp", [currentTime + deadline1])
+				const currentBlock2 = await ethers.provider.getBlockNumber()
+				const currentTime = (await ethers.provider.getBlock(currentBlock2))
+					.timestamp
+				await ethers.provider.send('evm_setNextBlockTimestamp', [
+					currentTime + deadline1,
+				])
 				// Function call is static call (off-chain) hence manually mine to update the blocktime
-				await ethers.provider.send("evm_mine",[])
+				await ethers.provider.send('evm_mine', [])
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
@@ -470,9 +476,10 @@ describe('TimeCollections', () => {
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				const currentBlock = await ethers.provider.getBlockNumber();
-				const deadline1 = (await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
-				await ethers.provider.send("evm_increaseTime", [3600])
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				await ethers.provider.send('evm_increaseTime', [3600])
 				await cont.setImages(
 					property.address,
 					[
@@ -516,9 +523,10 @@ describe('TimeCollections', () => {
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				const currentBlock = await ethers.provider.getBlockNumber();
-				const deadline1 = (await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
-				await ethers.provider.send("evm_increaseTime", [3600])
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				await ethers.provider.send('evm_increaseTime', [3600])
 				await cont.setImages(
 					property.address,
 					[
@@ -563,9 +571,10 @@ describe('TimeCollections', () => {
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				const currentBlock = await ethers.provider.getBlockNumber();
-				const deadline1 = (await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
-				await ethers.provider.send("evm_increaseTime", [3600])
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				await ethers.provider.send('evm_increaseTime', [3600])
 				await cont.setImages(
 					property.address,
 					[
@@ -610,9 +619,10 @@ describe('TimeCollections', () => {
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				const currentBlock = await ethers.provider.getBlockNumber();
-				const deadline1 = (await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
-				await ethers.provider.send("evm_increaseTime", [3600])
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				await ethers.provider.send('evm_increaseTime', [3600])
 				await cont.setImages(
 					property.address,
 					[
@@ -663,9 +673,10 @@ describe('TimeCollections', () => {
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				const currentBlock = await ethers.provider.getBlockNumber();
-				const deadline1 = (await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
-				await ethers.provider.send("evm_increaseTime", [3600])
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				await ethers.provider.send('evm_increaseTime', [3600])
 				await cont.setImages(
 					property.address,
 					[
@@ -747,9 +758,10 @@ describe('TimeCollections', () => {
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				const currentBlock = await ethers.provider.getBlockNumber();
-				const deadline1 = (await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
-				await ethers.provider.send("evm_increaseTime", [3600])
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				await ethers.provider.send('evm_increaseTime', [3600])
 				await cont.setImages(
 					property.address,
 					[
@@ -831,9 +843,10 @@ describe('TimeCollections', () => {
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				const currentBlock = await ethers.provider.getBlockNumber();
-				const deadline1 = (await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
-				await ethers.provider.send("evm_increaseTime", [3600])
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				await ethers.provider.send('evm_increaseTime', [3600])
 				await cont.setImages(
 					property.address,
 					[
@@ -908,9 +921,10 @@ describe('TimeCollections', () => {
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				const currentBlock = await ethers.provider.getBlockNumber();
-				const deadline1 = (await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
-				await ethers.provider.send("evm_increaseTime", [3600])
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				await ethers.provider.send('evm_increaseTime', [3600])
 				await cont.setImages(
 					property.address,
 					[
@@ -969,9 +983,10 @@ describe('TimeCollections', () => {
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
-				const currentBlock = await ethers.provider.getBlockNumber();
-				const deadline1 = (await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
-				await ethers.provider.send("evm_increaseTime", [3600])
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				await ethers.provider.send('evm_increaseTime', [3600])
 				await cont.setImages(
 					property.address,
 					[
