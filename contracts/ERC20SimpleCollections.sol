@@ -13,7 +13,7 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		string src;
 		string name;
 		string description;
-		uint256 requiredUSDCAmount;
+		uint256 requiredTokenAmount;
 		uint256 requiredUSDCFee;
 		address gateway;
 	}
@@ -112,7 +112,7 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		// When not defined the key
 		if (
 			bytes(img.src).length == 0 &&
-			img.requiredUSDCAmount == 0 &&
+			img.requiredTokenAmount == 0 &&
 			img.requiredUSDCFee == 0
 		) {
 			return false;
@@ -124,7 +124,7 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		);
 
 		// Validate the staking position.
-		bool valid = img.requiredUSDCAmount <= stakeVia.input &&
+		bool valid = img.requiredTokenAmount <= stakeVia.input &&
 			img.requiredUSDCFee <= stakeVia.fee;
 
 		if (valid) {
