@@ -30,7 +30,10 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	modifier onlyPropertyAuthor(address _property) {
 		address _owner_ = owner();
 		address author = IProperty(_property).author();
-		require(author == _msgSender() || _owner_ == _msgSender(), "illegal access");
+		require(
+			author == _msgSender() || _owner_ == _msgSender(),
+			"illegal access"
+		);
 		_;
 	}
 
