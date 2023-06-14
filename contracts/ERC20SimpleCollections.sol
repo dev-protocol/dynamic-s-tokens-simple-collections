@@ -21,6 +21,7 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	ISwapAndStake public swapAndStake;
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
+	mapping(address => bool) public whitelistedTokens;
 
 	function initialize(address _contract) external initializer {
 		__Ownable_init();
@@ -39,6 +40,14 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 	function setSwapAndStake(address _contract) external onlyOwner {
 		swapAndStake = ISwapAndStake(_contract);
+	}
+
+	function whitelistToken(address _token) external onlyOwner {
+		whitelistedTokens[_token] = true;
+	}
+
+	function blacklistToken(address _token) external onlyOwner {
+		whitelistedTokens[_token] = false;
 	}
 
 	function image(
