@@ -989,4 +989,98 @@ describe('ERC20SimpleCollections', () => {
 			})
 		})
 	})
+
+	describe('whitelistToken', () => {
+		describe('success', () => {
+			it('can set whitelistToken', async () => {
+				const cont = await deployWithProxy<ERC20SimpleCollections>(
+					'ERC20SimpleCollections'
+				)
+				const [addr1, swapAndStake, token] = await ethers.getSigners()
+				await cont.initialize(swapAndStake.address)
+				const owner = await cont.owner()
+				expect(owner).to.equal(addr1.address)
+				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
+				// Before whitelisting
+				expect(await cont.allowlistedTokens(token.address)).to.equal(false)
+				// Whitelist the token.
+				await cont.whitelistToken(token.address)
+				// After whitelisting
+				expect(owner).to.equal(addr1.address)
+				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
+				expect(await cont.allowlistedTokens(token.address)).to.equal(true)
+			})
+		})
+		describe('fail', () => {
+			it('cannot whitelist if not owner', async () => {
+				const cont = await deployWithProxy<ERC20SimpleCollections>(
+					'ERC20SimpleCollections'
+				)
+				const [addr1, addr2, swapAndStake, token] = await ethers.getSigners()
+				await cont.initialize(swapAndStake.address)
+				const owner = await cont.owner()
+				expect(owner).to.equal(addr1.address)
+				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
+				// Before whitelisting
+				expect(await cont.allowlistedTokens(token.address)).to.equal(false)
+				// Try Whitelisting
+				await expect(
+					cont.connect(addr2).whitelistToken(token.address)
+				).to.be.revertedWith('Ownable: caller is not the owner')
+				// After trying whitelisting
+				expect(owner).to.equal(addr1.address)
+				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
+				expect(await cont.allowlistedTokens(token.address)).to.equal(false)
+			})
+		})
+	})
+
+	describe('blacklistToken', () => {
+		describe('success', () => {
+			it('can set blacklistToken', async () => {
+				const cont = await deployWithProxy<ERC20SimpleCollections>(
+					'ERC20SimpleCollections'
+				)
+				const [addr1, swapAndStake, token] = await ethers.getSigners()
+				await cont.initialize(swapAndStake.address)
+				await cont.whitelistToken(token.address)
+
+				// Before blacklisting
+				const owner = await cont.owner()
+				expect(owner).to.equal(addr1.address)
+				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
+				expect(await cont.allowlistedTokens(token.address)).to.equal(true)
+				// Blackist token
+				await cont.blacklistToken(token.address)
+				// After blacklisting
+				expect(owner).to.equal(addr1.address)
+				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
+				expect(await cont.allowlistedTokens(token.address)).to.equal(false)
+			})
+		})
+		describe('fail', () => {
+			it('cannot blacklistToken if not owner', async () => {
+				const cont = await deployWithProxy<ERC20SimpleCollections>(
+					'ERC20SimpleCollections'
+				)
+				const [addr1, addr2, swapAndStake, token] = await ethers.getSigners()
+				await cont.initialize(swapAndStake.address)
+				await cont.whitelistToken(token.address)
+
+				// Before blacklisting
+				const owner = await cont.owner()
+				expect(owner).to.equal(addr1.address)
+				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
+				expect(await cont.allowlistedTokens(token.address)).to.equal(true)
+				// Try blacklisting
+				await expect(
+					cont.connect(addr2).blacklistToken(token.address)
+				).to.be.revertedWith('Ownable: caller is not the owner')
+				// After trying whitelisting
+				expect(owner).to.equal(addr1.address)
+				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
+				expect(await cont.allowlistedTokens(token.address)).to.equal(true)
+			})
+		})
+	})
 })
