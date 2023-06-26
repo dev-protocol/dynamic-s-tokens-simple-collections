@@ -244,7 +244,7 @@ describe('ERC20SimpleCollections', () => {
 		describe('fail', () => {
 			it('should fail to call when the sender is not owner', async () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
-					'SimpleColleERC20SimpleCollectionsctions'
+					'ERC20SimpleCollections'
 				)
 				const [owner, swap, addr1] = await ethers.getSigners()
 				const property = await (
