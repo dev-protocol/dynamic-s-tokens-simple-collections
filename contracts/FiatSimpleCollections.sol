@@ -39,12 +39,15 @@ contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		_;
 	}
 
-/**
- * Allow owner to set the price oracle for a given token
- * @param _token being used for payment
- * @param _oracle address of the price oracle
- */
-	function setTokenPriceOracle(address _token, address _oracle) external onlyOwner {
+	/**
+	 * Allow owner to set the price oracle for a given token
+	 * @param _token being used for payment
+	 * @param _oracle address of the price oracle
+	 */
+	function setTokenPriceOracle(
+		address _token,
+		address _oracle
+	) external onlyOwner {
 		tokenPriceOracle[_token] = _oracle;
 	}
 
@@ -141,7 +144,9 @@ contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 		// Check currency value vs USD
 		// int256 currencyToUsd = priceOracle.latestAnswer();
-		uint256 currencyToUsd = uint256(IPriceOracle(tokenPriceOracle[img.token]).latestAnswer());
+		uint256 currencyToUsd = uint256(
+			IPriceOracle(tokenPriceOracle[img.token]).latestAnswer()
+		);
 
 		// Calculate the required USD amount
 		uint256 usdRequiredAmount = currencyToUsd * img.requiredFiatAmount;
