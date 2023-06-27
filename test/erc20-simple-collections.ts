@@ -321,7 +321,7 @@ describe('ERC20SimpleCollections', () => {
 					'ERC20SimpleCollections'
 				)
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway, token] = await ethers.getSigners()
@@ -371,7 +371,7 @@ describe('ERC20SimpleCollections', () => {
 				)
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway, token] = await ethers.getSigners()
@@ -424,7 +424,7 @@ describe('ERC20SimpleCollections', () => {
 				)
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 				const [owner, gateway] = await ethers.getSigners()
 				const property = await (
@@ -470,7 +470,7 @@ describe('ERC20SimpleCollections', () => {
 				)
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 				const [owner, gateway, token] = await ethers.getSigners()
 				const property = await (
@@ -516,7 +516,7 @@ describe('ERC20SimpleCollections', () => {
 					'ERC20SimpleCollections'
 				)
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 				const [owner, gateway, token] = await ethers.getSigners()
 				const property = await (
@@ -566,7 +566,7 @@ describe('ERC20SimpleCollections', () => {
 					'ERC20SimpleCollections'
 				)
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 				const [owner, gateway, token] = await ethers.getSigners()
 				const property = await (
@@ -620,7 +620,7 @@ describe('ERC20SimpleCollections', () => {
 				)
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway, token] = await ethers.getSigners()
@@ -703,7 +703,7 @@ describe('ERC20SimpleCollections', () => {
 					'ERC20SimpleCollections'
 				)
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway, token] = await ethers.getSigners()
@@ -787,7 +787,7 @@ describe('ERC20SimpleCollections', () => {
 					'ERC20SimpleCollections'
 				)
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway, token] = await ethers.getSigners()
@@ -863,7 +863,7 @@ describe('ERC20SimpleCollections', () => {
 				)
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway, token] = await ethers.getSigners()
@@ -923,7 +923,7 @@ describe('ERC20SimpleCollections', () => {
 				)
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway, token] = await ethers.getSigners()
