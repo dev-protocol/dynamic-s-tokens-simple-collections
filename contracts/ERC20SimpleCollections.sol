@@ -142,7 +142,7 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		bool valid = img.requiredTokenAmount <= stakeVia.input &&
 			img.requiredTokenFee <= stakeVia.fee &&
 			allowlistedTokens[img.token] && // Ensure other contract are using whitelisted tokens.
-			img.token != address(0); // TODO: compare img.token with stakeVia.tooken coming from swapAndStake.
+			img.token == stakeVia.token; // Validate that token used is same as expected token.
 
 		if (valid) {
 			stakedAmountAtMinted[_positions.property][id] = _positions.amount;
