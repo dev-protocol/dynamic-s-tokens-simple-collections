@@ -236,6 +236,22 @@ describe('ERC20SimpleCollections', () => {
 					token.address
 				)
 
+				expect((await cont.propertyImages(property.address, y)).src).to.equal(
+					'Y_SRC'
+				)
+
+				expect((await cont.propertyImages(property.address, y)).name).to.equal(
+					'Y_NAME'
+				)
+
+				expect(
+					(await cont.propertyImages(property.address, y)).description
+				).to.equal('Y_DESC')
+
+				expect((await cont.propertyImages(property.address, y)).token).to.equal(
+					token.address
+				)
+
 				await cont.removeImage(property.address, x)
 
 				expect((await cont.propertyImages(property.address, x)).src).to.equal(
@@ -249,6 +265,22 @@ describe('ERC20SimpleCollections', () => {
 				).to.equal('')
 				expect((await cont.propertyImages(property.address, x)).token).to.equal(
 					constants.AddressZero
+				)
+
+				expect((await cont.propertyImages(property.address, y)).src).to.equal(
+					'Y_SRC'
+				)
+
+				expect((await cont.propertyImages(property.address, y)).name).to.equal(
+					'Y_NAME'
+				)
+
+				expect(
+					(await cont.propertyImages(property.address, y)).description
+				).to.equal('Y_DESC')
+
+				expect((await cont.propertyImages(property.address, y)).token).to.equal(
+					token.address
 				)
 			})
 		})
