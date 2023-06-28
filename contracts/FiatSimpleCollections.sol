@@ -142,6 +142,9 @@ contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 			img.gateway
 		);
 
+		// require the token to be allowlisted
+		require(allowlistedTokens[img.token], "token not allowed");
+
 		// Check currency value vs USD
 		// int256 currencyToUsd = priceOracle.latestAnswer();
 		uint256 currencyToUsd = uint256(
