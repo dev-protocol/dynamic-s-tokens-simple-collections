@@ -523,7 +523,7 @@ describe('ERC20SimpleCollections', () => {
 							eth1,
 							eth001,
 							gateway.address,
-							owner.address // TODO: change this address to token address.
+							token.address
 						),
 					],
 					[x]
@@ -569,7 +569,7 @@ describe('ERC20SimpleCollections', () => {
 							eth1,
 							eth001,
 							gateway.address,
-							owner.address // TODO: change this address to token address.
+							token.address
 						),
 					],
 					[x]
@@ -619,7 +619,7 @@ describe('ERC20SimpleCollections', () => {
 							eth1,
 							eth001,
 							gateway.address,
-							owner.address // TODO: change this address to token address.
+							token.address
 						),
 					],
 					[x]
