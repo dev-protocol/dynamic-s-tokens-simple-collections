@@ -8,6 +8,12 @@ import "./interfaces/IProperty.sol";
 import "./interfaces/ISwapAndStake.sol";
 import "./interfaces/IPriceOracle.sol";
 
+import {IUniswapV2Pair} from "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
+
+/**
+ * @title FiatSimpleCollections
+ * @notice Intended to be used validating Matic input to Yen
+ */
 contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	struct Image {
 		string src;
@@ -19,36 +25,38 @@ contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		address token;
 	}
 
+	address private uniswapFactory;
+	address public uniswapPair;
+
 	ISwapAndStake public swapAndStake;
+
+	// The stablecoin being used
+	address public stableToken;
+	address public nativeToken;
+	address public fiatOracle;
+
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
-	mapping(address => bool) public allowlistedTokens;
 
-	// Maps the payment address to the price oracle address
-	// These are set by the owner
-	mapping(address => address) private tokenPriceOracle;
-
-	function initialize(address _contract) external initializer {
+	function initialize(
+		address _contract,
+		address _stableToken,
+		address _uniswapFactory,
+		address _uniswapPair,
+		address _fiatOracle
+	) external initializer {
 		__Ownable_init();
 		swapAndStake = ISwapAndStake(_contract);
+		stableToken = _stableToken;
+		uniswapFactory = _uniswapFactory;
+		uniswapPair = _uniswapPair;
+		fiatOracle = _fiatOracle;
 	}
 
 	modifier onlyPropertyAuthor(address _property) {
 		address author = IProperty(_property).author();
 		require(author == _msgSender(), "illegal access");
 		_;
-	}
-
-	/**
-	 * Allow owner to set the price oracle for a given token
-	 * @param _token being used for payment
-	 * @param _oracle address of the price oracle
-	 */
-	function setTokenPriceOracle(
-		address _token,
-		address _oracle
-	) external onlyOwner {
-		tokenPriceOracle[_token] = _oracle;
 	}
 
 	function setSwapAndStake(address _contract) external onlyOwner {
@@ -119,6 +127,18 @@ contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		delete propertyImages[_propertyAddress][_key];
 	}
 
+	function getNativePriceInUsdc() internal view returns (uint) {
+		IUniswapV2Pair pair = IUniswapV2Pair(uniswapPair);
+
+		(uint112 reserve0, uint112 reserve1, ) = pair.getReserves();
+		(uint112 reserveMatic, uint112 reserveUsdc) = pair.token0() ==
+			address(0x0)
+			? (reserve0, reserve1)
+			: (reserve1, reserve0);
+
+		return (reserveUsdc * 1e18) / reserveMatic;
+	}
+
 	function onBeforeMint(
 		uint256 id,
 		address,
@@ -142,24 +162,23 @@ contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 			img.gateway
 		);
 
-		// TODO: require the token to be allowlisted
+		uint maticPrice = getNativePriceInUsdc();
+
+		// calculate stake amount in USD
+		uint stakeAmountInUsd = (stakeVia.input * maticPrice) / 1e18;
 
 		// Check currency value vs USD
 		// int256 currencyToUsd = priceOracle.latestAnswer();
 		uint256 currencyToUsd = uint256(
-			IPriceOracle(tokenPriceOracle[img.token]).latestAnswer()
+			IPriceOracle(fiatOracle).latestAnswer()
 		);
 
-		// Calculate the required USD amount
-		uint256 usdRequiredAmount = currencyToUsd * img.requiredFiatAmount;
-		uint256 usdFeeAmount = currencyToUsd * img.requiredFiatFee;
-
-		// should i be converting this USD amounts to Matic here?
+		uint stakeInputInYen = (stakeAmountInUsd * currencyToUsd) / 1e18;
+		uint stakeFeeInYen = (stakeVia.fee * currencyToUsd) / 1e18;
 
 		// Validate the staking position.
-		bool valid = usdRequiredAmount <= stakeVia.input &&
-			usdFeeAmount <= stakeVia.fee &&
-			allowlistedTokens[img.token] && // Ensure other contract are using allowlisted tokens.
+		bool valid = img.requiredFiatAmount <= stakeInputInYen &&
+			img.requiredFiatFee <= stakeFeeInYen &&
 			img.token != address(0); // TODO: compare img.token with stakeVia.tooken coming from swapAndStake.
 
 		if (valid) {
