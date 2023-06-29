@@ -642,6 +642,103 @@ describe('ERC20SimpleCollections', () => {
 
 				expect(res).to.equal(false)
 			})
+
+			it('returns false if token used is different from required by image', async () => {
+				const cont = await deployWithProxy<ERC20SimpleCollections>(
+					'ERC20SimpleCollections'
+				)
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway, token, token2] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+				await cont.whitelistToken(token.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							gateway.address,
+							token.address
+						),
+					],
+					[x]
+				)
+
+				const res = await swapAndStake.callStatic.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: token2.address },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(res).to.equal(false)
+			})
+
+			it('returns false if token is not whitelisted', async () => {
+				const cont = await deployWithProxy<ERC20SimpleCollections>(
+					'ERC20SimpleCollections'
+				)
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway, token] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							gateway.address,
+							token.address
+						),
+					],
+					[x]
+				)
+
+				const res = await swapAndStake.callStatic.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: token.address },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(res).to.equal(false)
+			})
 		})
 	})
 	describe('image', () => {
