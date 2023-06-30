@@ -25,14 +25,10 @@ contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		address token;
 	}
 
-	address private uniswapFactory;
 	address public uniswapPair;
 
 	ISwapAndStake public swapAndStake;
 
-	// The stablecoin being used
-	address public stableToken;
-	address public nativeToken;
 	address public fiatOracle;
 
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
@@ -40,15 +36,11 @@ contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 	function initialize(
 		address _contract,
-		address _stableToken,
-		address _uniswapFactory,
 		address _uniswapPair,
 		address _fiatOracle
 	) external initializer {
 		__Ownable_init();
 		swapAndStake = ISwapAndStake(_contract);
-		stableToken = _stableToken;
-		uniswapFactory = _uniswapFactory;
 		uniswapPair = _uniswapPair;
 		fiatOracle = _fiatOracle;
 	}
