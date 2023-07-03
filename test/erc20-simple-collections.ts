@@ -97,7 +97,7 @@ describe('ERC20SimpleCollections', () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
-				const [owner, swap] = await ethers.getSigners()
+				const [owner, swap, token] = await ethers.getSigners()
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
@@ -117,7 +117,7 @@ describe('ERC20SimpleCollections', () => {
 							eth1,
 							eth001,
 							owner.address,
-							owner.address // TODO: change this address to token address.
+							token.address
 						),
 						structImage(
 							'Y_SRC',
@@ -126,7 +126,7 @@ describe('ERC20SimpleCollections', () => {
 							eth1,
 							eth001,
 							owner.address,
-							owner.address // TODO: change this address to token address.
+							token.address
 						),
 					],
 					[x, y]
@@ -138,11 +138,13 @@ describe('ERC20SimpleCollections', () => {
 				expect(image1.description).to.equal('X_DESC')
 				expect(image1.requiredTokenAmount).to.equal(eth1)
 				expect(image1.requiredTokenFee).to.equal(eth001)
+				expect(image1.token).to.equal(token.address)
 				expect(image2.src).to.equal('Y_SRC')
 				expect(image2.name).to.equal('Y_NAME')
 				expect(image2.description).to.equal('Y_DESC')
 				expect(image2.requiredTokenAmount).to.equal(eth1)
 				expect(image2.requiredTokenFee).to.equal(eth001)
+				expect(image2.token).to.equal(token.address)
 			})
 		})
 		describe('fail', () => {
@@ -150,27 +152,29 @@ describe('ERC20SimpleCollections', () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
-				const [owner, swap, addr1] = await ethers.getSigners()
+				const [owner, swap, addr1, token] = await ethers.getSigners()
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swap.address)
 				await expect(
-					cont.connect(addr1).setImages(
-						property.address,
-						[
-							structImage(
-								'X_SRC',
-								'X_NAME',
-								'X_DESC',
-								utils.parseEther('1'),
-								utils.parseEther('0.01'),
-								owner.address,
-								owner.address // TODO: change this address to token address.
-							),
-						],
-						[utils.keccak256(utils.toUtf8Bytes('X'))]
-					)
+					cont
+						.connect(addr1)
+						.setImages(
+							property.address,
+							[
+								structImage(
+									'X_SRC',
+									'X_NAME',
+									'X_DESC',
+									utils.parseEther('1'),
+									utils.parseEther('0.01'),
+									owner.address,
+									token.address
+								),
+							],
+							[utils.keccak256(utils.toUtf8Bytes('X'))]
+						)
 				).to.be.revertedWith('illegal access')
 			})
 		})
@@ -181,7 +185,7 @@ describe('ERC20SimpleCollections', () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
-				const [owner, swap] = await ethers.getSigners()
+				const [owner, swap, token] = await ethers.getSigners()
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
@@ -201,7 +205,7 @@ describe('ERC20SimpleCollections', () => {
 							eth1,
 							eth001,
 							owner.address,
-							owner.address // TODO: change this address to token address.
+							token.address
 						),
 						structImage(
 							'Y_SRC',
@@ -210,7 +214,7 @@ describe('ERC20SimpleCollections', () => {
 							eth1,
 							eth001,
 							owner.address,
-							owner.address // TODO: change this address to token address.
+							token.address
 						),
 					],
 					[x, y]
@@ -227,6 +231,26 @@ describe('ERC20SimpleCollections', () => {
 				expect(
 					(await cont.propertyImages(property.address, x)).description
 				).to.equal('X_DESC')
+
+				expect((await cont.propertyImages(property.address, x)).token).to.equal(
+					token.address
+				)
+
+				expect((await cont.propertyImages(property.address, y)).src).to.equal(
+					'Y_SRC'
+				)
+
+				expect((await cont.propertyImages(property.address, y)).name).to.equal(
+					'Y_NAME'
+				)
+
+				expect(
+					(await cont.propertyImages(property.address, y)).description
+				).to.equal('Y_DESC')
+
+				expect((await cont.propertyImages(property.address, y)).token).to.equal(
+					token.address
+				)
 
 				await cont.removeImage(property.address, x)
 
@@ -239,6 +263,25 @@ describe('ERC20SimpleCollections', () => {
 				expect(
 					(await cont.propertyImages(property.address, x)).description
 				).to.equal('')
+				expect((await cont.propertyImages(property.address, x)).token).to.equal(
+					constants.AddressZero
+				)
+
+				expect((await cont.propertyImages(property.address, y)).src).to.equal(
+					'Y_SRC'
+				)
+
+				expect((await cont.propertyImages(property.address, y)).name).to.equal(
+					'Y_NAME'
+				)
+
+				expect(
+					(await cont.propertyImages(property.address, y)).description
+				).to.equal('Y_DESC')
+
+				expect((await cont.propertyImages(property.address, y)).token).to.equal(
+					token.address
+				)
 			})
 		})
 		describe('fail', () => {
@@ -246,7 +289,7 @@ describe('ERC20SimpleCollections', () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
-				const [owner, swap, addr1] = await ethers.getSigners()
+				const [owner, swap, addr1, token] = await ethers.getSigners()
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
@@ -266,7 +309,7 @@ describe('ERC20SimpleCollections', () => {
 							eth1,
 							eth001,
 							owner.address,
-							owner.address // TODO: change this address to token address.
+							token.address
 						),
 						structImage(
 							'Y_SRC',
@@ -275,7 +318,7 @@ describe('ERC20SimpleCollections', () => {
 							eth1,
 							eth001,
 							owner.address,
-							owner.address // TODO: change this address to token address.
+							token.address
 						),
 					],
 					[x, y]
@@ -292,6 +335,10 @@ describe('ERC20SimpleCollections', () => {
 				expect(
 					(await cont.propertyImages(property.address, x)).description
 				).to.equal('X_DESC')
+
+				expect((await cont.propertyImages(property.address, x)).token).to.equal(
+					token.address
+				)
 
 				await expect(
 					cont.connect(addr1).removeImage(property.address, x)
@@ -306,15 +353,16 @@ describe('ERC20SimpleCollections', () => {
 					'ERC20SimpleCollections'
 				)
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
-				const [owner, gateway] = await ethers.getSigners()
+				const [owner, gateway, token] = await ethers.getSigners()
 
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
+				await cont.whitelistToken(token.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -329,7 +377,7 @@ describe('ERC20SimpleCollections', () => {
 							eth1,
 							eth001,
 							gateway.address,
-							owner.address // TODO: change this address to token address.
+							token.address
 						),
 					],
 					[x]
@@ -338,7 +386,7 @@ describe('ERC20SimpleCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: token.address },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -355,15 +403,16 @@ describe('ERC20SimpleCollections', () => {
 				)
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
-				const [owner, gateway] = await ethers.getSigners()
+				const [owner, gateway, token] = await ethers.getSigners()
 
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
+				await cont.whitelistToken(token.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -378,7 +427,7 @@ describe('ERC20SimpleCollections', () => {
 							eth1,
 							eth001,
 							gateway.address,
-							owner.address // TODO: change this address to token address.
+							token.address
 						),
 					],
 					[x]
@@ -387,7 +436,7 @@ describe('ERC20SimpleCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: token.address },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -407,7 +456,7 @@ describe('ERC20SimpleCollections', () => {
 				)
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 				const [owner, gateway] = await ethers.getSigners()
 				const property = await (
@@ -453,14 +502,14 @@ describe('ERC20SimpleCollections', () => {
 				)
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
-				const [owner, gateway] = await ethers.getSigners()
+				const [owner, gateway, token] = await ethers.getSigners()
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-
+				await cont.whitelistToken(token.address)
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -474,7 +523,7 @@ describe('ERC20SimpleCollections', () => {
 							eth1,
 							eth001,
 							gateway.address,
-							owner.address // TODO: change this address to token address.
+							token.address
 						),
 					],
 					[x]
@@ -483,7 +532,7 @@ describe('ERC20SimpleCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: token.address },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -499,14 +548,14 @@ describe('ERC20SimpleCollections', () => {
 					'ERC20SimpleCollections'
 				)
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
-				const [owner, gateway] = await ethers.getSigners()
+				const [owner, gateway, token] = await ethers.getSigners()
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-
+				await cont.whitelistToken(token.address)
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -520,7 +569,7 @@ describe('ERC20SimpleCollections', () => {
 							eth1,
 							eth001,
 							gateway.address,
-							owner.address // TODO: change this address to token address.
+							token.address
 						),
 					],
 					[x]
@@ -529,7 +578,11 @@ describe('ERC20SimpleCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: utils.parseEther('0.999'), fee: eth001 },
+					{
+						input: utils.parseEther('0.999'),
+						fee: eth001,
+						token: token.address,
+					},
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -545,9 +598,110 @@ describe('ERC20SimpleCollections', () => {
 					'ERC20SimpleCollections'
 				)
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
-				const [owner, gateway] = await ethers.getSigners()
+				const [owner, gateway, token] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+				await cont.whitelistToken(token.address)
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							gateway.address,
+							token.address
+						),
+					],
+					[x]
+				)
+
+				const res = await swapAndStake.callStatic.__mock(
+					1,
+					gateway.address,
+					{
+						input: eth1,
+						fee: utils.parseEther('0.00999'),
+						token: token.address,
+					},
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(res).to.equal(false)
+			})
+
+			it('returns false if token used is different from required by image', async () => {
+				const cont = await deployWithProxy<ERC20SimpleCollections>(
+					'ERC20SimpleCollections'
+				)
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway, token, token2] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+				await cont.whitelistToken(token.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							gateway.address,
+							token.address
+						),
+					],
+					[x]
+				)
+
+				const res = await swapAndStake.callStatic.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: token2.address },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(res).to.equal(false)
+			})
+
+			it('returns false if token is not whitelisted', async () => {
+				const cont = await deployWithProxy<ERC20SimpleCollections>(
+					'ERC20SimpleCollections'
+				)
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway, token] = await ethers.getSigners()
+
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
@@ -566,7 +720,7 @@ describe('ERC20SimpleCollections', () => {
 							eth1,
 							eth001,
 							gateway.address,
-							owner.address // TODO: change this address to token address.
+							token.address
 						),
 					],
 					[x]
@@ -575,7 +729,7 @@ describe('ERC20SimpleCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: eth1, fee: utils.parseEther('0.00999') },
+					{ input: eth1, fee: eth001, token: token.address },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -595,16 +749,16 @@ describe('ERC20SimpleCollections', () => {
 				)
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
-				const [owner, gateway] = await ethers.getSigners()
+				const [owner, gateway, token] = await ethers.getSigners()
 
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-
+				await cont.whitelistToken(token.address)
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -627,7 +781,7 @@ describe('ERC20SimpleCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: token.address },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -678,15 +832,16 @@ describe('ERC20SimpleCollections', () => {
 					'ERC20SimpleCollections'
 				)
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
-				const [owner, gateway] = await ethers.getSigners()
+				const [owner, gateway, token] = await ethers.getSigners()
 
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
+				await cont.whitelistToken(token.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -710,7 +865,7 @@ describe('ERC20SimpleCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: token.address },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -761,16 +916,16 @@ describe('ERC20SimpleCollections', () => {
 					'ERC20SimpleCollections'
 				)
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
-				const [owner, gateway] = await ethers.getSigners()
+				const [owner, gateway, token] = await ethers.getSigners()
 
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-
+				await cont.whitelistToken(token.address)
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -837,16 +992,16 @@ describe('ERC20SimpleCollections', () => {
 				)
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
-				const [owner, gateway] = await ethers.getSigners()
+				const [owner, gateway, token] = await ethers.getSigners()
 
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-
+				await cont.whitelistToken(token.address)
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -869,7 +1024,7 @@ describe('ERC20SimpleCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: token.address },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -897,16 +1052,16 @@ describe('ERC20SimpleCollections', () => {
 				)
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
-				const [owner, gateway] = await ethers.getSigners()
+				const [owner, gateway, token] = await ethers.getSigners()
 
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-
+				await cont.whitelistToken(token.address)
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -929,7 +1084,7 @@ describe('ERC20SimpleCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: token.address },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),

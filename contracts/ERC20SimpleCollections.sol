@@ -6,7 +6,7 @@ import "@devprotocol/i-s-tokens/contracts/interfaces/ISTokensManagerStruct.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "./interfaces/IProperty.sol";
-import "./interfaces/ISwapAndStake.sol";
+import "./interfaces/IDynamicTokenSwapAndStake.sol";
 
 contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	struct Image {
@@ -19,14 +19,14 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		address token;
 	}
 
-	ISwapAndStake public swapAndStake;
+	IDynamicTokenSwapAndStake public swapAndStake;
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
 	mapping(address => bool) public allowlistedTokens;
 
 	function initialize(address _contract) external initializer {
 		__Ownable_init();
-		swapAndStake = ISwapAndStake(_contract);
+		swapAndStake = IDynamicTokenSwapAndStake(_contract);
 	}
 
 	modifier onlyPropertyAuthor(address _property) {
@@ -40,7 +40,7 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	}
 
 	function setSwapAndStake(address _contract) external onlyOwner {
-		swapAndStake = ISwapAndStake(_contract);
+		swapAndStake = IDynamicTokenSwapAndStake(_contract);
 	}
 
 	function whitelistToken(address _token) external onlyOwner {
@@ -134,15 +134,14 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		}
 
 		// Always only allow staking via the SwapAndStake contract.
-		ISwapAndStake.Amounts memory stakeVia = swapAndStake.gatewayOf(
-			img.gateway
-		);
+		IDynamicTokenSwapAndStake.Amounts memory stakeVia = swapAndStake
+			.gatewayOf(img.gateway);
 
 		// Validate the staking position.
 		bool valid = img.requiredTokenAmount <= stakeVia.input &&
 			img.requiredTokenFee <= stakeVia.fee &&
 			allowlistedTokens[img.token] && // Ensure other contract are using whitelisted tokens.
-			img.token != address(0); // TODO: compare img.token with stakeVia.tooken coming from swapAndStake.
+			img.token == stakeVia.token; // Validate that token used is same as expected token.
 
 		if (valid) {
 			stakedAmountAtMinted[_positions.property][id] = _positions.amount;
