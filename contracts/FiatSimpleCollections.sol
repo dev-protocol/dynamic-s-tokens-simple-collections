@@ -22,7 +22,6 @@ contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		uint256 requiredFiatAmount;
 		uint256 requiredFiatFee;
 		address gateway;
-		address token;
 	}
 
 	struct UsdAmount {
@@ -148,8 +147,7 @@ contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		if (
 			bytes(img.src).length == 0 &&
 			img.requiredFiatAmount == 0 &&
-			img.requiredFiatFee == 0 &&
-			img.token == address(0)
+			img.requiredFiatFee == 0
 		) {
 			return false;
 		}
