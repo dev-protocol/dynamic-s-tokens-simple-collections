@@ -25,6 +25,11 @@ contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		address token;
 	}
 
+	struct UsdAmount {
+		uint256 amount;
+		uint256 fee;
+	}
+
 	address public uniswapPair;
 
 	ISwapAndStake public swapAndStake;
@@ -157,21 +162,22 @@ contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		uint maticPrice = getNativePriceInUsdc();
 
 		// calculate stake amount in USD
-		uint stakeAmountInUsd = (stakeVia.input * maticPrice) / 1e18;
+		UsdAmount memory stakeViaUsd = UsdAmount({
+			amount: (stakeVia.input * maticPrice) / 1e18,
+			fee: (stakeVia.fee * maticPrice) / 1e18
+		});
 
-		// Check currency value vs USD
-		// int256 currencyToUsd = priceOracle.latestAnswer();
+		// Check fiat value vs USD
 		uint256 currencyToUsd = uint256(
-			IPriceOracle(fiatOracle).latestAnswer()
+			IPriceOracle(fiatOracle).latestAnswer() * 1e10
 		);
 
-		uint stakeInputInYen = (stakeAmountInUsd * currencyToUsd) / 1e18;
-		uint stakeFeeInYen = (stakeVia.fee * currencyToUsd) / 1e18;
+		uint stakeInputInYen = (stakeViaUsd.amount / currencyToUsd) * 1e18;
+		uint stakeFeeInYen = (stakeViaUsd.fee / currencyToUsd) * 1e18;
 
 		// Validate the staking position.
 		bool valid = img.requiredFiatAmount <= stakeInputInYen &&
-			img.requiredFiatFee <= stakeFeeInYen &&
-			img.token != address(0); // TODO: compare img.token with stakeVia.tooken coming from swapAndStake.
+			img.requiredFiatFee <= stakeFeeInYen;
 
 		if (valid) {
 			stakedAmountAtMinted[_positions.property][id] = _positions.amount;

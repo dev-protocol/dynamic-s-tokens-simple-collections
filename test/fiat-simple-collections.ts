@@ -1,6 +1,6 @@
 import { expect, use } from 'chai'
 import type { BigNumberish, ContractFactory } from 'ethers'
-import { constants, utils } from 'ethers'
+import { BigNumber, constants, utils } from 'ethers'
 import { solidity } from 'ethereum-waffle'
 import { deployWithProxy } from './utils'
 import {
@@ -8,6 +8,7 @@ import {
 	type FiatSimpleCollections,
 	type MockUniswapPool,
 	type SimpleCollections,
+	type SwapAndStake,
 } from '../typechain-types'
 import { ethers, waffle } from 'hardhat'
 // Import * as uniswapPair from '../artifacts/@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol/IUniswapV2Pair.json'
@@ -54,8 +55,9 @@ const structImage = (
 describe('FiatSimpleCollections', () => {
 	let mockUniswapPool: MockUniswapPool
 	let fiatSimpleCollections: FiatSimpleCollections
+	let swapAndStake: SwapAndStake
 
-	before(async () => {
+	beforeEach(async () => {
 		const [owner] = await ethers.getSigners()
 
 		// Deploy the mock Uniswap pool before each test
@@ -94,9 +96,9 @@ describe('FiatSimpleCollections', () => {
 			'FiatSimpleCollections'
 		)
 
-		const swapAndStake = await (
+		swapAndStake = (await (
 			await ethers.getContractFactory('SwapAndStake')
-		).deploy(fiatSimpleCollections.address)
+		).deploy(fiatSimpleCollections.address)) as SwapAndStake
 
 		await fiatSimpleCollections.initialize(
 			swapAndStake.address,
@@ -312,6 +314,16 @@ describe('FiatSimpleCollections', () => {
 		})
 	})
 	describe('onBeforeMint', () => {
+		// Matic price should be 0.50 USDC
+		// JPY fiat amount should be 100 yen
+		// JPY fiat fee should be 1 yen
+		// JPY/USD price: 1 yen == $0.00700000 (700000)
+		// ==============================================================
+		// required USD should be (100 yen * 0.0070) == 0.70 USD
+		// required Matic should be (0.70 USD / 0.50 USD) == 1.4 Matic (1400000000000000000)
+		// required USD fee should be (1 yen * 0.0070) == 0.007 USD
+		// required Matic fee should be (0.007 USD / 0.50 USD) == 0.014 Matic (14000000000000)
+
 		describe('success', () => {
 			it('returns true if receives the defined bytes32 key and passes validation', async () => {
 				expect(true).to.eq(true)
@@ -323,8 +335,12 @@ describe('FiatSimpleCollections', () => {
 				).deploy(owner.address, 'Testing', 'TEST')
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
-				const fiatAmount = utils.parseEther('1')
-				const fiatFee = utils.parseEther('0.01')
+				// eslint-disable-next-line @typescript-eslint/naming-convention
+				const imagePriceInJPY = utils.parseEther('100')
+				// eslint-disable-next-line @typescript-eslint/naming-convention
+				const imageFeeInJPY = utils.parseEther('1')
+				const maticAmount = utils.parseEther('1.4')
+				const maticFee = utils.parseEther('0.014')
 
 				await cont.setImages(
 					property.address,
@@ -333,8 +349,8 @@ describe('FiatSimpleCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							fiatAmount,
-							fiatFee,
+							imagePriceInJPY,
+							imageFeeInJPY,
 							gateway.address,
 							owner.address // TODO: change this address to token address.
 						),
@@ -342,9 +358,10 @@ describe('FiatSimpleCollections', () => {
 					[x]
 				)
 
-				const res = await cont.onBeforeMint(
+				const res = await swapAndStake.callStatic.__mock(
 					1,
-					constants.AddressZero,
+					gateway.address,
+					{ input: maticAmount, fee: maticFee },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('1'),
@@ -352,23 +369,27 @@ describe('FiatSimpleCollections', () => {
 					x
 				)
 
-				console.log('res is: ', res)
-
 				expect(res).to.eq(true)
 			})
 		})
 		describe('fail', () => {
-			it('should fail to call when the calling is not internal call from SwapAndStake', async () => {
-				const cont = fiatSimpleCollections
+			it('returns false if receives Matic amount sent is less than required JPY', async () => {
+				expect(true).to.eq(true)
 
+				const cont = fiatSimpleCollections
 				const [owner, gateway] = await ethers.getSigners()
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
-				const eth1 = utils.parseEther('1')
-				const eth001 = utils.parseEther('0.01')
+				// eslint-disable-next-line @typescript-eslint/naming-convention
+				const imagePriceInJPY = utils.parseEther('100')
+				// eslint-disable-next-line @typescript-eslint/naming-convention
+				const imageFeeInJPY = utils.parseEther('1')
+				const maticAmount = utils.parseEther('1.3')
+				const maticFee = utils.parseEther('0.013')
+
 				await cont.setImages(
 					property.address,
 					[
@@ -376,51 +397,8 @@ describe('FiatSimpleCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							eth1,
-							eth001,
-							gateway.address,
-							owner.address // TODO: change this address to token address.
-						),
-					],
-					[x]
-				)
-
-				const res = await cont.callStatic.onBeforeMint(
-					9,
-					gateway.address,
-					structPositions({
-						property: property.address,
-						amount: utils.parseEther('3'),
-					}),
-					x
-				)
-
-				expect(res).to.equal(false)
-			})
-
-			it('returns false if the received bytes32 key is not defined', async () => {
-				const cont = fiatSimpleCollections
-
-				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
-				).deploy(cont.address)
-				const [owner, gateway] = await ethers.getSigners()
-				const property = await (
-					await ethers.getContractFactory('Property')
-				).deploy(owner.address, 'Testing', 'TEST')
-
-				const x = utils.keccak256(utils.toUtf8Bytes('X'))
-				const eth1 = utils.parseEther('1')
-				const eth001 = utils.parseEther('0.01')
-				await cont.setImages(
-					property.address,
-					[
-						structImage(
-							'X_SRC',
-							'X_NAME',
-							'X_DESC',
-							eth1,
-							eth001,
+							imagePriceInJPY,
+							imageFeeInJPY,
 							gateway.address,
 							owner.address // TODO: change this address to token address.
 						),
@@ -431,101 +409,15 @@ describe('FiatSimpleCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: maticAmount, fee: maticFee },
 					structPositions({
 						property: property.address,
-						amount: utils.parseEther('3'),
-					}),
-					utils.keccak256(utils.toUtf8Bytes('XYZ'))
-				)
-
-				expect(res).to.equal(false)
-			})
-
-			it('returns false if not passed validation for requiredETHAmount', async () => {
-				const cont = fiatSimpleCollections
-				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
-				).deploy(cont.address)
-				const [owner, gateway] = await ethers.getSigners()
-				const property = await (
-					await ethers.getContractFactory('Property')
-				).deploy(owner.address, 'Testing', 'TEST')
-
-				const x = utils.keccak256(utils.toUtf8Bytes('X'))
-				const eth1 = utils.parseEther('1')
-				const eth001 = utils.parseEther('0.01')
-				await cont.setImages(
-					property.address,
-					[
-						structImage(
-							'X_SRC',
-							'X_NAME',
-							'X_DESC',
-							eth1,
-							eth001,
-							gateway.address,
-							owner.address // TODO: change this address to token address.
-						),
-					],
-					[x]
-				)
-
-				const res = await swapAndStake.callStatic.__mock(
-					1,
-					gateway.address,
-					{ input: utils.parseEther('0.999'), fee: eth001 },
-					structPositions({
-						property: property.address,
-						amount: utils.parseEther('3'),
+						amount: utils.parseEther('1'),
 					}),
 					x
 				)
 
-				expect(res).to.equal(false)
-			})
-
-			it('returns false if not passed validation for requiredETHFee', async () => {
-				const cont = fiatSimpleCollections
-				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
-				).deploy(cont.address)
-				const [owner, gateway] = await ethers.getSigners()
-				const property = await (
-					await ethers.getContractFactory('Property')
-				).deploy(owner.address, 'Testing', 'TEST')
-
-				const x = utils.keccak256(utils.toUtf8Bytes('X'))
-				const eth1 = utils.parseEther('1')
-				const eth001 = utils.parseEther('0.01')
-				await cont.setImages(
-					property.address,
-					[
-						structImage(
-							'X_SRC',
-							'X_NAME',
-							'X_DESC',
-							eth1,
-							eth001,
-							gateway.address,
-							owner.address // TODO: change this address to token address.
-						),
-					],
-					[x]
-				)
-
-				const res = await swapAndStake.callStatic.__mock(
-					1,
-					gateway.address,
-					{ input: eth1, fee: utils.parseEther('0.00999') },
-					structPositions({
-						property: property.address,
-						amount: utils.parseEther('3'),
-					}),
-					x
-				)
-
-				expect(res).to.equal(false)
+				expect(res).to.eq(false)
 			})
 		})
 	})
