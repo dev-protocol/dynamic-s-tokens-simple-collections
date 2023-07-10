@@ -12,7 +12,7 @@ import {IUniswapV2Pair} from "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pa
 
 /**
  * @title FiatSimpleCollections
- * @notice Intended to be used validating Matic input to Yen
+ * @notice Intended to be used validating Matic input to target fiat (ie JPY) depending on price oracle
  */
 contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	struct Image {
@@ -170,12 +170,12 @@ contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 			IPriceOracle(fiatOracle).latestAnswer() * 1e10
 		);
 
-		uint stakeInputInYen = (stakeViaUsd.amount / currencyToUsd) * 1e18;
-		uint stakeFeeInYen = (stakeViaUsd.fee / currencyToUsd) * 1e18;
+		uint stakeInputTargetFiat = (stakeViaUsd.amount / currencyToUsd) * 1e18;
+		uint stakeFeeTargetFiat = (stakeViaUsd.fee / currencyToUsd) * 1e18;
 
 		// Validate the staking position.
-		bool valid = img.requiredFiatAmount <= stakeInputInYen &&
-			img.requiredFiatFee <= stakeFeeInYen;
+		bool valid = img.requiredFiatAmount <= stakeInputTargetFiat &&
+			img.requiredFiatFee <= stakeFeeTargetFiat;
 
 		if (valid) {
 			stakedAmountAtMinted[_positions.property][id] = _positions.amount;
