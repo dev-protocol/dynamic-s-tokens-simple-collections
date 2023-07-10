@@ -7,6 +7,8 @@
 | Polygon Mumbai  | `0x672bA772beD905Ad9Ecb924bD9c47eAb156153C0` | `0x1d556338cc64304b41BAbeC0aF833E3181338026` |
 | Polygon Mainnet | `0xF235ff0A6B33e074daFd98bB4BD2b300c1561339` | `0xAFD8111ee1f9910ee42dfE7A8d129d8C7A8Ea466` |
 
+For the JPY Fiat oracle, we are using https://polygonscan.com/address/0xd647a6fc9bc6402301583c91decc5989d8bc382d
+
 # Installation
 
 ```bash
