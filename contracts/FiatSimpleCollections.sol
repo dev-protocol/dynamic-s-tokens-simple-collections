@@ -135,6 +135,22 @@ contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		return (reserveUsdc * 1e18) / reserveMatic;
 	}
 
+	/**
+	 * @dev Matic/Target Fiat price (ie JPY)
+	 * @return uint256
+	 */
+	function nativeToFiat() external view returns (uint256) {
+		// get the price of ETH/Matic in USD
+		uint nativePriceUsd = getNativePriceInUsdc();
+
+		// Check fiat value vs USD (ie JPY/USD)
+		uint256 fiatCurrencyToUsd = uint256(
+			IPriceOracle(fiatOracle).latestAnswer() * 1e10
+		);
+
+		return (nativePriceUsd * 1e18) / fiatCurrencyToUsd;
+	}
+
 	function onBeforeMint(
 		uint256 id,
 		address,

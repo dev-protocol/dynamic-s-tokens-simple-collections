@@ -313,6 +313,25 @@ describe('FiatSimpleCollections', () => {
 			})
 		})
 	})
+
+	describe('fiatToNative', () => {
+		describe('success', () => {
+			// JPY/USD price: 1 yen == $0.00700000 (700000)
+			// USD/JPY price 1 USD == 142.857 yen
+			// Matic/USD price: 1 MATIC == 0.50 USDC
+			// --------------------------------------------------------------
+			// 1 MATIC == 0.50 USDC == 0.50 / 0.007 yen == 71.42857142857143 yen
+
+			it('should return native value in fiat currency', async () => {
+				const cont = fiatSimpleCollections
+
+				const res = await cont.nativeToFiat()
+				console.log('res is: ', res.toString())
+				expect(res).to.equal(BigNumber.from('71428571428571428571'))
+			})
+		})
+	})
+
 	describe('onBeforeMint', () => {
 		// Matic price should be 0.50 USDC
 		// JPY fiat amount should be 100 yen
@@ -326,8 +345,6 @@ describe('FiatSimpleCollections', () => {
 
 		describe('success', () => {
 			it('returns true if receives the defined bytes32 key and passes validation', async () => {
-				expect(true).to.eq(true)
-
 				const cont = fiatSimpleCollections
 				const [owner, gateway] = await ethers.getSigners()
 				const property = await (
