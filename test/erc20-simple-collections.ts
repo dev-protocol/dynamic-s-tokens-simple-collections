@@ -362,7 +362,7 @@ describe('ERC20SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.whitelistToken(token.address)
+				await cont.allowListToken(token.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -412,7 +412,7 @@ describe('ERC20SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.whitelistToken(token.address)
+				await cont.allowListToken(token.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -509,7 +509,7 @@ describe('ERC20SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.whitelistToken(token.address)
+				await cont.allowListToken(token.address)
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -555,7 +555,7 @@ describe('ERC20SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.whitelistToken(token.address)
+				await cont.allowListToken(token.address)
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -605,7 +605,7 @@ describe('ERC20SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.whitelistToken(token.address)
+				await cont.allowListToken(token.address)
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -657,7 +657,7 @@ describe('ERC20SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.whitelistToken(token.address)
+				await cont.allowListToken(token.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -692,7 +692,7 @@ describe('ERC20SimpleCollections', () => {
 				expect(res).to.equal(false)
 			})
 
-			it('returns false if token is not whitelisted', async () => {
+			it('returns false if token is not allowlisted', async () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
@@ -758,7 +758,7 @@ describe('ERC20SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.whitelistToken(token.address)
+				await cont.allowListToken(token.address)
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -841,7 +841,7 @@ describe('ERC20SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.whitelistToken(token.address)
+				await cont.allowListToken(token.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -925,7 +925,7 @@ describe('ERC20SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.whitelistToken(token.address)
+				await cont.allowListToken(token.address)
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -1001,7 +1001,7 @@ describe('ERC20SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.whitelistToken(token.address)
+				await cont.allowListToken(token.address)
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -1061,7 +1061,7 @@ describe('ERC20SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
-				await cont.whitelistToken(token.address)
+				await cont.allowListToken(token.address)
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -1145,9 +1145,9 @@ describe('ERC20SimpleCollections', () => {
 		})
 	})
 
-	describe('whitelistToken', () => {
+	describe('allowListToken', () => {
 		describe('success', () => {
-			it('can set whitelistToken', async () => {
+			it('can set allowListToken', async () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
@@ -1156,18 +1156,18 @@ describe('ERC20SimpleCollections', () => {
 				const owner = await cont.owner()
 				expect(owner).to.equal(addr1.address)
 				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
-				// Before whitelisting
+				// Before allowlisting
 				expect(await cont.allowlistedTokens(token.address)).to.equal(false)
-				// Whitelist the token.
-				await cont.whitelistToken(token.address)
-				// After whitelisting
+				// Allowlist the token.
+				await cont.allowListToken(token.address)
+				// After allowlisting
 				expect(owner).to.equal(addr1.address)
 				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
 				expect(await cont.allowlistedTokens(token.address)).to.equal(true)
 			})
 		})
 		describe('fail', () => {
-			it('cannot whitelist if not owner', async () => {
+			it('cannot allowlist if not owner', async () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
@@ -1176,13 +1176,13 @@ describe('ERC20SimpleCollections', () => {
 				const owner = await cont.owner()
 				expect(owner).to.equal(addr1.address)
 				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
-				// Before whitelisting
+				// Before allowlisting
 				expect(await cont.allowlistedTokens(token.address)).to.equal(false)
-				// Try Whitelisting
+				// Try Allowlisting
 				await expect(
-					cont.connect(addr2).whitelistToken(token.address)
+					cont.connect(addr2).allowListToken(token.address)
 				).to.be.revertedWith('Ownable: caller is not the owner')
-				// After trying whitelisting
+				// After trying allowlisting
 				expect(owner).to.equal(addr1.address)
 				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
 				expect(await cont.allowlistedTokens(token.address)).to.equal(false)
@@ -1190,48 +1190,48 @@ describe('ERC20SimpleCollections', () => {
 		})
 	})
 
-	describe('blacklistToken', () => {
+	describe('denylistToken', () => {
 		describe('success', () => {
-			it('can set blacklistToken', async () => {
+			it('can set denylistToken', async () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
 				const [addr1, swapAndStake, token] = await ethers.getSigners()
 				await cont.initialize(swapAndStake.address)
-				await cont.whitelistToken(token.address)
+				await cont.allowListToken(token.address)
 
-				// Before blacklisting
+				// Before denylisting
 				const owner = await cont.owner()
 				expect(owner).to.equal(addr1.address)
 				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
 				expect(await cont.allowlistedTokens(token.address)).to.equal(true)
-				// Blackist token
-				await cont.blacklistToken(token.address)
-				// After blacklisting
+				// DenyList token
+				await cont.denyListToken(token.address)
+				// After denylisting
 				expect(owner).to.equal(addr1.address)
 				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
 				expect(await cont.allowlistedTokens(token.address)).to.equal(false)
 			})
 		})
 		describe('fail', () => {
-			it('cannot blacklistToken if not owner', async () => {
+			it('cannot denylistToken if not owner', async () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
 				const [addr1, addr2, swapAndStake, token] = await ethers.getSigners()
 				await cont.initialize(swapAndStake.address)
-				await cont.whitelistToken(token.address)
+				await cont.allowListToken(token.address)
 
-				// Before blacklisting
+				// Before denylisting
 				const owner = await cont.owner()
 				expect(owner).to.equal(addr1.address)
 				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
 				expect(await cont.allowlistedTokens(token.address)).to.equal(true)
-				// Try blacklisting
+				// Try denylisting
 				await expect(
-					cont.connect(addr2).blacklistToken(token.address)
+					cont.connect(addr2).denyListToken(token.address)
 				).to.be.revertedWith('Ownable: caller is not the owner')
-				// After trying whitelisting
+				// After trying allowlisting
 				expect(owner).to.equal(addr1.address)
 				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
 				expect(await cont.allowlistedTokens(token.address)).to.equal(true)

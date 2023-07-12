@@ -43,11 +43,11 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		swapAndStake = IDynamicTokenSwapAndStake(_contract);
 	}
 
-	function whitelistToken(address _token) external onlyOwner {
+	function allowListToken(address _token) external onlyOwner {
 		allowlistedTokens[_token] = true;
 	}
 
-	function blacklistToken(address _token) external onlyOwner {
+	function denyListToken(address _token) external onlyOwner {
 		allowlistedTokens[_token] = false;
 	}
 
@@ -140,7 +140,7 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		// Validate the staking position.
 		bool valid = img.requiredTokenAmount <= stakeVia.input &&
 			img.requiredTokenFee <= stakeVia.fee &&
-			allowlistedTokens[img.token] && // Ensure other contract are using whitelisted tokens.
+			allowlistedTokens[img.token] && // Ensure other contract are using allowlisted tokens.
 			img.token == stakeVia.token; // Validate that token used is same as expected token.
 
 		if (valid) {
