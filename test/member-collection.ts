@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/prefer-readonly-parameter-types */
-/* eslint-disable @typescript-eslint/naming-convention */
+
 import { expect, use } from 'chai'
 import type { BigNumberish } from 'ethers'
 import { constants, utils } from 'ethers'
@@ -47,16 +47,18 @@ const structImage = (
 	name: string,
 	description: string,
 	slots: number,
-	requiredETHAmount: BigNumberish,
-	requiredETHFee: BigNumberish,
+	requiredTokenAmount: BigNumberish,
+	requiredTokenFee: BigNumberish,
+	token: string,
 	gateway: string
 ) => ({
 	src,
 	name,
 	description,
 	slots,
-	requiredETHAmount,
-	requiredETHFee,
+	requiredTokenAmount,
+	requiredTokenFee,
+	token,
 	gateway,
 })
 describe('MembersCollections', () => {
@@ -92,7 +94,7 @@ describe('MembersCollections', () => {
 				const cont = await deployWithProxy<MembersCollections>(
 					'MembersCollections'
 				)
-				const [owner, swap] = await ethers.getSigners()
+				const [owner, swap, token] = await ethers.getSigners()
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
@@ -113,6 +115,7 @@ describe('MembersCollections', () => {
 							slots,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							owner.address
 						),
 						structImage(
@@ -122,6 +125,7 @@ describe('MembersCollections', () => {
 							slots,
 							eth1,
 							eth001,
+							token.address,
 							owner.address
 						),
 					],
@@ -133,14 +137,16 @@ describe('MembersCollections', () => {
 				expect(image1.name).to.equal('X_NAME')
 				expect(image1.description).to.equal('X_DESC')
 				expect(image1.slots).to.equal(slots)
-				expect(image1.requiredETHAmount).to.equal(eth1)
-				expect(image1.requiredETHFee).to.equal(eth001)
+				expect(image1.requiredTokenAmount).to.equal(eth1)
+				expect(image1.requiredTokenFee).to.equal(eth001)
+				expect(image1.token).to.equal(constants.AddressZero)
 				expect(image2.src).to.equal('Y_SRC')
 				expect(image2.name).to.equal('Y_NAME')
 				expect(image2.description).to.equal('Y_DESC')
 				expect(image2.slots).to.equal(slots)
-				expect(image2.requiredETHAmount).to.equal(eth1)
-				expect(image2.requiredETHFee).to.equal(eth001)
+				expect(image2.requiredTokenAmount).to.equal(eth1)
+				expect(image2.requiredTokenFee).to.equal(eth001)
+				expect(image2.token).to.equal(token.address)
 			})
 		})
 		describe('fail', () => {
@@ -167,6 +173,7 @@ describe('MembersCollections', () => {
 									slots,
 									utils.parseEther('1'),
 									utils.parseEther('0.01'),
+									constants.AddressZero,
 									owner.address
 								),
 							],
@@ -182,7 +189,7 @@ describe('MembersCollections', () => {
 				const cont = await deployWithProxy<MembersCollections>(
 					'MembersCollections'
 				)
-				const [owner, swap] = await ethers.getSigners()
+				const [owner, swap, token] = await ethers.getSigners()
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
@@ -203,6 +210,7 @@ describe('MembersCollections', () => {
 							slots,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							owner.address
 						),
 						structImage(
@@ -212,6 +220,7 @@ describe('MembersCollections', () => {
 							slots,
 							eth1,
 							eth001,
+							token.address,
 							owner.address
 						),
 					],
@@ -275,6 +284,7 @@ describe('MembersCollections', () => {
 							slots,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							owner.address
 						),
 						structImage(
@@ -284,6 +294,7 @@ describe('MembersCollections', () => {
 							slots,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							owner.address
 						),
 					],
@@ -315,7 +326,7 @@ describe('MembersCollections', () => {
 					'MembersCollections'
 				)
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway] = await ethers.getSigners()
@@ -339,6 +350,7 @@ describe('MembersCollections', () => {
 							slots,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -348,7 +360,7 @@ describe('MembersCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -364,7 +376,7 @@ describe('MembersCollections', () => {
 					'MembersCollections'
 				)
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway] = await ethers.getSigners()
@@ -388,6 +400,7 @@ describe('MembersCollections', () => {
 							slots,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -397,7 +410,7 @@ describe('MembersCollections', () => {
 				await swapAndStake.__mock(
 					1,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -410,7 +423,7 @@ describe('MembersCollections', () => {
 				await swapAndStake.__mock(
 					1,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -427,7 +440,7 @@ describe('MembersCollections', () => {
 				)
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway] = await ethers.getSigners()
@@ -451,6 +464,7 @@ describe('MembersCollections', () => {
 							slots,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -460,7 +474,173 @@ describe('MembersCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				const res = await cont.stakedAmountAtMinted(property.address, 9)
+
+				expect(res).to.equal(utils.parseEther('3'))
+			})
+
+			it('[ERC20] returns true if receives the defined bytes32 key and passes member slot validation', async () => {
+				const cont = await deployWithProxy<MembersCollections>(
+					'MembersCollections'
+				)
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway, token] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				const slots = 2
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							slots,
+							eth1,
+							eth001,
+							token.address,
+							gateway.address
+						),
+					],
+					[x]
+				)
+
+				const res = await swapAndStake.callStatic.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: token.address },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(res).to.equal(true)
+			})
+
+			it('[ERC20] mints the members stoken & reduces available slots', async () => {
+				const cont = await deployWithProxy<MembersCollections>(
+					'MembersCollections'
+				)
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway, token] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				const slots = 2
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							slots,
+							eth1,
+							eth001,
+							token.address,
+							gateway.address
+						),
+					],
+					[x]
+				)
+
+				await swapAndStake.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: token.address },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(await cont.getSlotsLeft(property.address, x)).to.equal(slots - 1)
+
+				await swapAndStake.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: token.address },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(await cont.getSlotsLeft(property.address, x)).to.equal(slots - 2)
+			})
+
+			it('[ERC20] update stakedAmountAtMinted when returning true', async () => {
+				const cont = await deployWithProxy<MembersCollections>(
+					'MembersCollections'
+				)
+
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway, token] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				const slots = 2
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							slots,
+							eth1,
+							eth001,
+							token.address,
+							gateway.address
+						),
+					],
+					[x]
+				)
+
+				await swapAndStake.__mock(
+					9,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: token.address },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -480,7 +660,7 @@ describe('MembersCollections', () => {
 				)
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 				const [owner, gateway] = await ethers.getSigners()
 				const property = await (
@@ -502,6 +682,7 @@ describe('MembersCollections', () => {
 							slots,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -510,7 +691,7 @@ describe('MembersCollections', () => {
 				await swapAndStake.__mock(
 					1,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -523,7 +704,7 @@ describe('MembersCollections', () => {
 				await swapAndStake.__mock(
 					1,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -552,7 +733,7 @@ describe('MembersCollections', () => {
 				)
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 				const [owner, gateway] = await ethers.getSigners()
 				const property = await (
@@ -574,6 +755,7 @@ describe('MembersCollections', () => {
 							slots,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -599,7 +781,7 @@ describe('MembersCollections', () => {
 				)
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 				const [owner, gateway] = await ethers.getSigners()
 				const property = await (
@@ -621,6 +803,7 @@ describe('MembersCollections', () => {
 							slots,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -630,7 +813,7 @@ describe('MembersCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -641,12 +824,12 @@ describe('MembersCollections', () => {
 				expect(res).to.equal(false)
 			})
 
-			it('returns false if not passed validation for requiredETHAmount', async () => {
+			it('returns false if not passed validation for requiredTokenAmount', async () => {
 				const cont = await deployWithProxy<MembersCollections>(
 					'MembersCollections'
 				)
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 				const [owner, gateway] = await ethers.getSigners()
 				const property = await (
@@ -668,6 +851,7 @@ describe('MembersCollections', () => {
 							slots,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -677,7 +861,11 @@ describe('MembersCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: utils.parseEther('0.999'), fee: eth001 },
+					{
+						input: utils.parseEther('0.999'),
+						fee: eth001,
+						token: constants.AddressZero,
+					},
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -688,12 +876,12 @@ describe('MembersCollections', () => {
 				expect(res).to.equal(false)
 			})
 
-			it('returns false if not passed validation for requiredETHFee', async () => {
+			it('returns false if not passed validation for requiredTokenFee', async () => {
 				const cont = await deployWithProxy<MembersCollections>(
 					'MembersCollections'
 				)
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 				const [owner, gateway] = await ethers.getSigners()
 				const property = await (
@@ -715,6 +903,7 @@ describe('MembersCollections', () => {
 							slots,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -724,7 +913,285 @@ describe('MembersCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: eth1, fee: utils.parseEther('0.00999') },
+					{
+						input: eth1,
+						fee: utils.parseEther('0.00999'),
+						token: constants.AddressZero,
+					},
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(res).to.equal(false)
+			})
+
+			it('[ERC20] should fail when slots are filled', async () => {
+				const cont = await deployWithProxy<MembersCollections>(
+					'MembersCollections'
+				)
+
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+				const [owner, gateway, token] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				const slots = 2
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							slots,
+							eth1,
+							eth001,
+							token.address,
+							gateway.address
+						),
+					],
+					[x]
+				)
+				await swapAndStake.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: token.address },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(await cont.getSlotsLeft(property.address, x)).to.equal(slots - 1)
+
+				await swapAndStake.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: token.address },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(await cont.getSlotsLeft(property.address, x)).to.equal(slots - 2)
+
+				const res = await cont.callStatic.onBeforeMint(
+					9,
+					gateway.address,
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(res).to.equal(false)
+			})
+
+			it('[ERC20] should fail to call when the calling is not internal call from SwapAndStake', async () => {
+				const cont = await deployWithProxy<MembersCollections>(
+					'MembersCollections'
+				)
+
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+				const [owner, gateway, token] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				const slots = 2
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							slots,
+							eth1,
+							eth001,
+							token.address,
+							gateway.address
+						),
+					],
+					[x]
+				)
+
+				const res = await cont.callStatic.onBeforeMint(
+					9,
+					gateway.address,
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(res).to.equal(false)
+			})
+
+			it('[ERC20] returns false if the received bytes32 key is not defined', async () => {
+				const cont = await deployWithProxy<MembersCollections>(
+					'MembersCollections'
+				)
+
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+				const [owner, gateway, token] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				const slots = 2
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							slots,
+							eth1,
+							eth001,
+							token.address,
+							gateway.address
+						),
+					],
+					[x]
+				)
+
+				const res = await swapAndStake.callStatic.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: token.address },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					utils.keccak256(utils.toUtf8Bytes('XYZ'))
+				)
+
+				expect(res).to.equal(false)
+			})
+
+			it('[ERC20] returns false if not passed validation for requiredTokenAmount', async () => {
+				const cont = await deployWithProxy<MembersCollections>(
+					'MembersCollections'
+				)
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+				const [owner, gateway, token] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				const slots = 2
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							slots,
+							eth1,
+							eth001,
+							token.address,
+							gateway.address
+						),
+					],
+					[x]
+				)
+
+				const res = await swapAndStake.callStatic.__mock(
+					1,
+					gateway.address,
+					{
+						input: utils.parseEther('0.999'),
+						fee: eth001,
+						token: token.address,
+					},
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(res).to.equal(false)
+			})
+
+			it('[ERC20] returns false if not passed validation for requiredTokenFee', async () => {
+				const cont = await deployWithProxy<MembersCollections>(
+					'MembersCollections'
+				)
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+				const [owner, gateway, token] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				const slots = 2
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							slots,
+							eth1,
+							eth001,
+							token.address,
+							gateway.address
+						),
+					],
+					[x]
+				)
+
+				const res = await swapAndStake.callStatic.__mock(
+					1,
+					gateway.address,
+					{
+						input: eth1,
+						fee: utils.parseEther('0.00999'),
+						token: token.address,
+					},
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -744,7 +1211,7 @@ describe('MembersCollections', () => {
 				)
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway] = await ethers.getSigners()
@@ -768,6 +1235,7 @@ describe('MembersCollections', () => {
 							slots,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -777,7 +1245,7 @@ describe('MembersCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -828,7 +1296,7 @@ describe('MembersCollections', () => {
 					'MembersCollections'
 				)
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway] = await ethers.getSigners()
@@ -852,6 +1320,7 @@ describe('MembersCollections', () => {
 							slots,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -861,7 +1330,7 @@ describe('MembersCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -912,7 +1381,7 @@ describe('MembersCollections', () => {
 					'MembersCollections'
 				)
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway] = await ethers.getSigners()
@@ -936,6 +1405,7 @@ describe('MembersCollections', () => {
 							slots,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -989,7 +1459,7 @@ describe('MembersCollections', () => {
 				)
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway] = await ethers.getSigners()
@@ -1013,6 +1483,7 @@ describe('MembersCollections', () => {
 							slots,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -1022,7 +1493,7 @@ describe('MembersCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -1050,7 +1521,7 @@ describe('MembersCollections', () => {
 				)
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway] = await ethers.getSigners()
@@ -1074,6 +1545,7 @@ describe('MembersCollections', () => {
 							slots,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -1083,7 +1555,7 @@ describe('MembersCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),

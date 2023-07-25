@@ -5,7 +5,7 @@ import "@devprotocol/i-s-tokens/contracts/interfaces/ITokenURIDescriptor.sol";
 import "@devprotocol/i-s-tokens/contracts/interfaces/ISTokensManagerStruct.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "./interfaces/IProperty.sol";
-import "./interfaces/ISwapAndStake.sol";
+import "./interfaces/IDynamicTokenSwapAndStake.sol";
 
 contract MembersCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	struct Image {
@@ -14,12 +14,13 @@ contract MembersCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		string description;
 		// number of slots a image can have
 		uint32 slots;
-		uint256 requiredETHAmount;
-		uint256 requiredETHFee;
+		uint256 requiredTokenAmount;
+		uint256 requiredTokenFee;
+		address token;
 		address gateway;
 	}
 
-	ISwapAndStake public swapAndStake;
+	IDynamicTokenSwapAndStake public swapAndStake;
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
 	mapping(address => mapping(bytes32 => uint32))
@@ -27,7 +28,7 @@ contract MembersCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 	function initialize(address _contract) external initializer {
 		__Ownable_init();
-		swapAndStake = ISwapAndStake(_contract);
+		swapAndStake = IDynamicTokenSwapAndStake(_contract);
 	}
 
 	modifier onlyPropertyAuthor(address _property) {
@@ -37,7 +38,7 @@ contract MembersCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	}
 
 	function setSwapAndStake(address _contract) external onlyOwner {
-		swapAndStake = ISwapAndStake(_contract);
+		swapAndStake = IDynamicTokenSwapAndStake(_contract);
 	}
 
 	function image(
@@ -115,8 +116,8 @@ contract MembersCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		// When key, slots are not defined or 0 slots
 		if (
 			bytes(img.src).length == 0 &&
-			img.requiredETHAmount == 0 &&
-			img.requiredETHFee == 0 &&
+			img.requiredTokenAmount == 0 &&
+			img.requiredTokenFee == 0 &&
 			img.slots == 0
 		) {
 			return false;
@@ -127,13 +128,13 @@ contract MembersCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		}
 
 		// Always only allow staking via the SwapAndStake contract.
-		ISwapAndStake.Amounts memory stakeVia = swapAndStake.gatewayOf(
-			img.gateway
-		);
+		IDynamicTokenSwapAndStake.Amounts memory stakeVia = swapAndStake
+			.gatewayOf(img.gateway);
 
 		// Validate the staking position.
-		bool valid = img.requiredETHAmount <= stakeVia.input &&
-			img.requiredETHFee <= stakeVia.fee;
+		bool valid = img.requiredTokenAmount <= stakeVia.input &&
+			img.requiredTokenFee <= stakeVia.fee &&
+			img.token == stakeVia.token;
 
 		if (valid) {
 			stakedAmountAtMinted[_positions.property][id] = _positions.amount;

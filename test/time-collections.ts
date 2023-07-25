@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/prefer-readonly-parameter-types */
-/* eslint-disable @typescript-eslint/naming-convention */
+
 import { expect, use } from 'chai'
 import type { BigNumberish } from 'ethers'
 import { constants, utils } from 'ethers'
@@ -47,16 +47,18 @@ const structImage = (
 	name: string,
 	description: string,
 	deadline: BigNumberish,
-	requiredETHAmount: BigNumberish,
-	requiredETHFee: BigNumberish,
+	requiredTokenAmount: BigNumberish,
+	requiredTokenFee: BigNumberish,
+	token: string,
 	gateway: string
 ) => ({
 	src,
 	name,
 	description,
 	deadline,
-	requiredETHAmount,
-	requiredETHFee,
+	requiredTokenAmount,
+	requiredTokenFee,
+	token,
 	gateway,
 })
 describe('TimeCollections', () => {
@@ -86,7 +88,7 @@ describe('TimeCollections', () => {
 		describe('success', () => {
 			it('set the images', async () => {
 				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
-				const [owner, swap] = await ethers.getSigners()
+				const [owner, swap, token] = await ethers.getSigners()
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
@@ -108,6 +110,7 @@ describe('TimeCollections', () => {
 							deadline1,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							owner.address
 						),
 						structImage(
@@ -117,6 +120,7 @@ describe('TimeCollections', () => {
 							deadline2,
 							eth1,
 							eth001,
+							token.address,
 							owner.address
 						),
 					],
@@ -128,14 +132,16 @@ describe('TimeCollections', () => {
 				expect(image1.name).to.equal('X_NAME')
 				expect(image1.description).to.equal('X_DESC')
 				expect(image1.deadline).to.equal(deadline1)
-				expect(image1.requiredETHAmount).to.equal(eth1)
-				expect(image1.requiredETHFee).to.equal(eth001)
+				expect(image1.requiredTokenAmount).to.equal(eth1)
+				expect(image1.requiredTokenFee).to.equal(eth001)
+				expect(image1.token).to.equal(constants.AddressZero)
 				expect(image2.src).to.equal('Y_SRC')
 				expect(image2.name).to.equal('Y_NAME')
 				expect(image2.description).to.equal('Y_DESC')
 				expect(image2.deadline).to.equal(deadline2)
-				expect(image2.requiredETHAmount).to.equal(eth1)
-				expect(image2.requiredETHFee).to.equal(eth001)
+				expect(image2.requiredTokenAmount).to.equal(eth1)
+				expect(image2.requiredTokenFee).to.equal(eth001)
+				expect(image2.token).to.equal(token.address)
 			})
 		})
 		describe('fail', () => {
@@ -160,6 +166,7 @@ describe('TimeCollections', () => {
 									deadline1,
 									utils.parseEther('1'),
 									utils.parseEther('0.01'),
+									constants.AddressZero,
 									owner.address
 								),
 							],
@@ -173,7 +180,7 @@ describe('TimeCollections', () => {
 		describe('success', () => {
 			it('remove the images', async () => {
 				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
-				const [owner, swap] = await ethers.getSigners()
+				const [owner, swap, token] = await ethers.getSigners()
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
@@ -195,6 +202,7 @@ describe('TimeCollections', () => {
 							deadline1,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							owner.address
 						),
 						structImage(
@@ -204,6 +212,7 @@ describe('TimeCollections', () => {
 							deadline2,
 							eth1,
 							eth001,
+							token.address,
 							owner.address
 						),
 					],
@@ -266,6 +275,7 @@ describe('TimeCollections', () => {
 							deadline1,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							owner.address
 						),
 						structImage(
@@ -275,6 +285,7 @@ describe('TimeCollections', () => {
 							deadline2,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							owner.address
 						),
 					],
@@ -308,7 +319,7 @@ describe('TimeCollections', () => {
 			it('returns true if receives the defined bytes32 key and passes time validation', async () => {
 				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway] = await ethers.getSigners()
@@ -334,6 +345,7 @@ describe('TimeCollections', () => {
 							deadline1,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -342,7 +354,7 @@ describe('TimeCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -357,7 +369,7 @@ describe('TimeCollections', () => {
 				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway] = await ethers.getSigners()
@@ -383,6 +395,7 @@ describe('TimeCollections', () => {
 							deadline1,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -393,7 +406,110 @@ describe('TimeCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				const res = await cont.stakedAmountAtMinted(property.address, 9)
+
+				expect(res).to.equal(utils.parseEther('3'))
+			})
+
+			it('[ERC20] returns true if receives the defined bytes32 key and passes time validation', async () => {
+				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway, token] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							deadline1,
+							eth1,
+							eth001,
+							token.address,
+							gateway.address
+						),
+					],
+					[x]
+				)
+				const res = await swapAndStake.callStatic.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: token.address },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(res).to.equal(true)
+			})
+
+			it('[ERC20] update stakedAmountAtMinted when returning true', async () => {
+				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
+
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway, token] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							deadline1,
+							eth1,
+							eth001,
+							token.address,
+							gateway.address
+						),
+					],
+					[x]
+				)
+				await ethers.provider.send('evm_increaseTime', [3600])
+				// Function call is a on-chain call, hence no need to manually mine the blocktime
+				await swapAndStake.__mock(
+					9,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: token.address },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -410,7 +526,7 @@ describe('TimeCollections', () => {
 			it('should fail when deadline is expired', async () => {
 				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway] = await ethers.getSigners()
@@ -436,6 +552,7 @@ describe('TimeCollections', () => {
 							deadline1,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -452,7 +569,7 @@ describe('TimeCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -465,7 +582,7 @@ describe('TimeCollections', () => {
 				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 				const [owner, gateway] = await ethers.getSigners()
 				const property = await (
@@ -490,6 +607,7 @@ describe('TimeCollections', () => {
 							deadline1,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -512,7 +630,7 @@ describe('TimeCollections', () => {
 				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 				const [owner, gateway] = await ethers.getSigners()
 				const property = await (
@@ -537,6 +655,7 @@ describe('TimeCollections', () => {
 							deadline1,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -546,7 +665,7 @@ describe('TimeCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -560,7 +679,7 @@ describe('TimeCollections', () => {
 			it('returns false if not passed validation for requiredETHAmount', async () => {
 				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 				const [owner, gateway] = await ethers.getSigners()
 				const property = await (
@@ -585,6 +704,7 @@ describe('TimeCollections', () => {
 							deadline1,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -594,7 +714,11 @@ describe('TimeCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: utils.parseEther('0.999'), fee: eth001 },
+					{
+						input: utils.parseEther('0.999'),
+						fee: eth001,
+						token: constants.AddressZero,
+					},
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -608,7 +732,7 @@ describe('TimeCollections', () => {
 			it('returns false if not passed validation for requiredETHFee', async () => {
 				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 				const [owner, gateway] = await ethers.getSigners()
 				const property = await (
@@ -633,6 +757,7 @@ describe('TimeCollections', () => {
 							deadline1,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -642,7 +767,270 @@ describe('TimeCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: eth1, fee: utils.parseEther('0.00999') },
+					{
+						input: eth1,
+						fee: utils.parseEther('0.00999'),
+						token: constants.AddressZero,
+					},
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(res).to.equal(false)
+			})
+
+			it('[ERC20] should fail when deadline is expired', async () => {
+				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway, token] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							deadline1,
+							eth1,
+							eth001,
+							token.address,
+							gateway.address
+						),
+					],
+					[x]
+				)
+				const currentBlock2 = await ethers.provider.getBlockNumber()
+				const currentTime = (await ethers.provider.getBlock(currentBlock2))
+					.timestamp
+				await ethers.provider.send('evm_setNextBlockTimestamp', [
+					currentTime + deadline1,
+				])
+				// Function call is static call (off-chain) hence manually mine to update the blocktime
+				await ethers.provider.send('evm_mine', [])
+				const res = await swapAndStake.callStatic.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: token.address },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+				expect(res).to.equal(false)
+			})
+			it('[ERC20] should fail to call when the calling is not internal call from SwapAndStake', async () => {
+				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
+
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+				const [owner, gateway, token] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				await ethers.provider.send('evm_increaseTime', [3600])
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							deadline1,
+							eth1,
+							eth001,
+							token.address,
+							gateway.address
+						),
+					],
+					[x]
+				)
+
+				const res = await cont.callStatic.onBeforeMint(
+					9,
+					gateway.address,
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+				expect(res).to.equal(false)
+			})
+
+			it('[ERC20] returns false if the received bytes32 key is not defined', async () => {
+				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
+
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+				const [owner, gateway, token] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				await ethers.provider.send('evm_increaseTime', [3600])
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							deadline1,
+							eth1,
+							eth001,
+							token.address,
+							gateway.address
+						),
+					],
+					[x]
+				)
+
+				const res = await swapAndStake.callStatic.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: token.address },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					utils.keccak256(utils.toUtf8Bytes('XYZ'))
+				)
+
+				expect(res).to.equal(false)
+			})
+
+			it('[ERC20] returns false if not passed validation for requiredETHAmount', async () => {
+				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+				const [owner, gateway, token] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				await ethers.provider.send('evm_increaseTime', [3600])
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							deadline1,
+							eth1,
+							eth001,
+							token.address,
+							gateway.address
+						),
+					],
+					[x]
+				)
+
+				const res = await swapAndStake.callStatic.__mock(
+					1,
+					gateway.address,
+					{
+						input: utils.parseEther('0.999'),
+						fee: eth001,
+						token: token.address,
+					},
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(res).to.equal(false)
+			})
+
+			it('[ERC20] returns false if not passed validation for requiredETHFee', async () => {
+				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+				const [owner, gateway, token] = await ethers.getSigners()
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				await ethers.provider.send('evm_increaseTime', [3600])
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							deadline1,
+							eth1,
+							eth001,
+							token.address,
+							gateway.address
+						),
+					],
+					[x]
+				)
+
+				const res = await swapAndStake.callStatic.__mock(
+					1,
+					gateway.address,
+					{
+						input: eth1,
+						fee: utils.parseEther('0.00999'),
+						token: token.address,
+					},
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -660,7 +1048,7 @@ describe('TimeCollections', () => {
 				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway] = await ethers.getSigners()
@@ -687,6 +1075,7 @@ describe('TimeCollections', () => {
 							deadline1,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -696,7 +1085,7 @@ describe('TimeCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -745,7 +1134,7 @@ describe('TimeCollections', () => {
 			it('returns correct image if the received bytes32 key is exists and staked amount is increased', async () => {
 				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway] = await ethers.getSigners()
@@ -772,6 +1161,7 @@ describe('TimeCollections', () => {
 							deadline1,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -781,7 +1171,7 @@ describe('TimeCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -830,7 +1220,7 @@ describe('TimeCollections', () => {
 			it('returns correct image if the received bytes32 key is exists and its calling is simulations call', async () => {
 				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway] = await ethers.getSigners()
@@ -857,6 +1247,7 @@ describe('TimeCollections', () => {
 							deadline1,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -908,7 +1299,7 @@ describe('TimeCollections', () => {
 				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway] = await ethers.getSigners()
@@ -935,6 +1326,7 @@ describe('TimeCollections', () => {
 							deadline1,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -944,7 +1336,7 @@ describe('TimeCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -970,7 +1362,7 @@ describe('TimeCollections', () => {
 				const cont = await deployWithProxy<TimeCollections>('TimeCollections')
 
 				const swapAndStake = await (
-					await ethers.getContractFactory('SwapAndStake')
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(cont.address)
 
 				const [owner, gateway] = await ethers.getSigners()
@@ -997,6 +1389,7 @@ describe('TimeCollections', () => {
 							deadline1,
 							eth1,
 							eth001,
+							constants.AddressZero,
 							gateway.address
 						),
 					],
@@ -1006,7 +1399,7 @@ describe('TimeCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
