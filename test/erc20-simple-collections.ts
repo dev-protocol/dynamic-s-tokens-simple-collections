@@ -1341,9 +1341,9 @@ describe('ERC20SimpleCollections', () => {
 		})
 	})
 
-	describe('devToken', () => {
+	describe('dev', () => {
 		describe('success', () => {
-			it('set devToken address', async () => {
+			it('set dev address', async () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
@@ -1351,12 +1351,12 @@ describe('ERC20SimpleCollections', () => {
 				await cont.initialize(addr2.address)
 
 				await cont.setDevToken(dev.address)
-				const devToken = await cont.devToken()
+				const devToken = await cont.dev()
 				expect(devToken).to.equal(dev.address)
 			})
 		})
 		describe('fail', () => {
-			it('should fail to set devToken address when the caller is not owner', async () => {
+			it('should fail to set DEV address when the caller is not owner', async () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)

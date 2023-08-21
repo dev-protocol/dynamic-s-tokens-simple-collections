@@ -23,7 +23,7 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
 	mapping(address => bool) public allowlistedTokens;
-	address public devToken;
+	address public dev;
 
 	function initialize(address _contract) external initializer {
 		__Ownable_init();
@@ -53,7 +53,7 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	}
 
 	function setDevToken(address _dev) external onlyOwner {
-		devToken = _dev;
+		dev = _dev;
 	}
 
 	function image(
@@ -140,7 +140,7 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 		bool valid;
 
-		if (img.token == devToken) {
+		if (img.token == dev) {
 			// Validate the staking position.
 			valid = img.requiredTokenAmount <= _positions.amount;
 		} else {
