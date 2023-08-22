@@ -448,6 +448,57 @@ describe('ERC20SimpleCollections', () => {
 
 				expect(res).to.equal(utils.parseEther('3'))
 			})
+
+			it('if the Image.token is set as DEV, onBeforeMint skips validation via SwapAndStake.gatewayOf', async () => {
+				const cont = await deployWithProxy<ERC20SimpleCollections>(
+					'ERC20SimpleCollections'
+				)
+				const lockup = await (
+					await ethers.getContractFactory('MockLockup')
+				).deploy(cont.address)
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway, dev] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+				await cont.allowListToken(dev.address)
+				await cont.setDevToken(dev.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const devAmount = utils.parseEther('1')
+				const devFeeAmount = utils.parseEther('1')
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							devAmount,
+							devFeeAmount,
+							gateway.address,
+							dev.address
+						),
+					],
+					[x]
+				)
+
+				const res = await lockup.callStatic.__mock(
+					1,
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('1'),
+					}),
+					x
+				)
+
+				expect(res).to.equal(true)
+			})
 		})
 		describe('fail', () => {
 			it('should fail to call when the calling is not internal call from SwapAndStake', async () => {
@@ -733,6 +784,57 @@ describe('ERC20SimpleCollections', () => {
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(res).to.equal(false)
+			})
+
+			it('returns false when the Image.token is set as DEV and the staked DEV is less than Image.requiredTokenAmount', async () => {
+				const cont = await deployWithProxy<ERC20SimpleCollections>(
+					'ERC20SimpleCollections'
+				)
+				const lockup = await (
+					await ethers.getContractFactory('MockLockup')
+				).deploy(cont.address)
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway, dev] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+				await cont.allowListToken(dev.address)
+				await cont.setDevToken(dev.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const devAmount = utils.parseEther('1')
+				const devFeeAmount = utils.parseEther('0')
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							devAmount,
+							devFeeAmount,
+							gateway.address,
+							dev.address
+						),
+					],
+					[x]
+				)
+
+				const res = await lockup.callStatic.__mock(
+					1,
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('0.99999'),
 					}),
 					x
 				)
@@ -1235,6 +1337,35 @@ describe('ERC20SimpleCollections', () => {
 				expect(owner).to.equal(addr1.address)
 				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
 				expect(await cont.allowlistedTokens(token.address)).to.equal(true)
+			})
+		})
+	})
+
+	describe('dev', () => {
+		describe('success', () => {
+			it('set dev address', async () => {
+				const cont = await deployWithProxy<ERC20SimpleCollections>(
+					'ERC20SimpleCollections'
+				)
+				const [, addr2, dev] = await ethers.getSigners()
+				await cont.initialize(addr2.address)
+
+				await cont.setDevToken(dev.address)
+				const devToken = await cont.dev()
+				expect(devToken).to.equal(dev.address)
+			})
+		})
+		describe('fail', () => {
+			it('should fail to set DEV address when the caller is not owner', async () => {
+				const cont = await deployWithProxy<ERC20SimpleCollections>(
+					'ERC20SimpleCollections'
+				)
+				const [, user, addr2, dev] = await ethers.getSigners()
+				await cont.initialize(addr2.address)
+
+				await expect(
+					cont.connect(user).setDevToken(dev.address)
+				).to.be.revertedWith('Ownable: caller is not the owner')
 			})
 		})
 	})

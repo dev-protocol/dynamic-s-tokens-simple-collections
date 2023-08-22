@@ -23,6 +23,7 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
 	mapping(address => bool) public allowlistedTokens;
+	address public dev;
 
 	function initialize(address _contract) external initializer {
 		__Ownable_init();
@@ -49,6 +50,10 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 	function denyListToken(address _token) external onlyOwner {
 		allowlistedTokens[_token] = false;
+	}
+
+	function setDevToken(address _dev) external onlyOwner {
+		dev = _dev;
 	}
 
 	function image(
@@ -133,15 +138,23 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 			return false;
 		}
 
-		// Always only allow staking via the SwapAndStake contract.
-		IDynamicTokenSwapAndStake.Amounts memory stakeVia = swapAndStake
-			.gatewayOf(img.gateway);
+		bool valid;
 
-		// Validate the staking position.
-		bool valid = img.requiredTokenAmount <= stakeVia.input &&
-			img.requiredTokenFee <= stakeVia.fee &&
-			allowlistedTokens[img.token] && // Ensure other contract are using allowlisted tokens.
-			img.token == stakeVia.token; // Validate that token used is same as expected token.
+		if (img.token == dev) {
+			// Validate the staking position.
+			valid = img.requiredTokenAmount <= _positions.amount;
+		} else {
+			// Always only allow staking via the SwapAndStake contract.
+			IDynamicTokenSwapAndStake.Amounts memory stakeVia = swapAndStake
+				.gatewayOf(img.gateway);
+
+			// Validate the staking position.
+			valid =
+				img.requiredTokenAmount <= stakeVia.input &&
+				img.requiredTokenFee <= stakeVia.fee &&
+				allowlistedTokens[img.token] && // Ensure other contract are using allowlisted tokens.
+				img.token == stakeVia.token; // Validate that token used is same as expected token.
+		}
 
 		if (valid) {
 			stakedAmountAtMinted[_positions.property][id] = _positions.amount;
