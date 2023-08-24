@@ -3,6 +3,7 @@ import { ethers, upgrades } from 'hardhat'
 import type { SimpleCollections__factory } from '../typechain-types'
 
 const SWAP_And_STAKE_ADDRESS = ''
+const WETH_ADDRESS = ''
 
 async function main() {
 	const contract = (await ethers.getContractFactory(
@@ -12,7 +13,7 @@ async function main() {
 	const admin = await upgrades.deployProxyAdmin()
 	const deployedContract = await upgrades.deployProxy(
 		contract,
-		[SWAP_And_STAKE_ADDRESS],
+		[SWAP_And_STAKE_ADDRESS, WETH_ADDRESS],
 		{ initializer: 'initialize' }
 	)
 

@@ -65,7 +65,7 @@ describe('SimpleCollections', () => {
 					'SimpleCollections'
 				)
 				const [addr1, addr2] = await ethers.getSigners()
-				await cont.initialize(addr2.address)
+				await cont.initialize(addr2.address, constants.AddressZero)
 				const owner = await cont.owner()
 				expect(owner).to.equal(addr1.address)
 			})
@@ -76,11 +76,11 @@ describe('SimpleCollections', () => {
 					'SimpleCollections'
 				)
 				const [, addr2] = await ethers.getSigners()
-				await cont.initialize(addr2.address)
+				await cont.initialize(addr2.address, constants.AddressZero)
 
-				await expect(cont.initialize(addr2.address)).to.be.revertedWith(
-					'Initializable: contract is already initialized'
-				)
+				await expect(
+					cont.initialize(addr2.address, constants.AddressZero)
+				).to.be.revertedWith('Initializable: contract is already initialized')
 			})
 		})
 	})
@@ -94,7 +94,7 @@ describe('SimpleCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swap.address)
+				await cont.initialize(swap.address, constants.AddressZero)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const y = utils.keccak256(utils.toUtf8Bytes('Y'))
@@ -145,7 +145,7 @@ describe('SimpleCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swap.address)
+				await cont.initialize(swap.address, constants.AddressZero)
 				await expect(
 					cont
 						.connect(addr1)
@@ -177,7 +177,7 @@ describe('SimpleCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swap.address)
+				await cont.initialize(swap.address, constants.AddressZero)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const y = utils.keccak256(utils.toUtf8Bytes('Y'))
@@ -240,7 +240,7 @@ describe('SimpleCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swap.address)
+				await cont.initialize(swap.address, constants.AddressZero)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const y = utils.keccak256(utils.toUtf8Bytes('Y'))
@@ -302,7 +302,7 @@ describe('SimpleCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swapAndStake.address)
+				await cont.initialize(swapAndStake.address, constants.AddressZero)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -350,7 +350,7 @@ describe('SimpleCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swapAndStake.address)
+				await cont.initialize(swapAndStake.address, constants.AddressZero)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -399,7 +399,7 @@ describe('SimpleCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swapAndStake.address)
+				await cont.initialize(swapAndStake.address, constants.AddressZero)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -444,7 +444,7 @@ describe('SimpleCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swapAndStake.address)
+				await cont.initialize(swapAndStake.address, constants.AddressZero)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -489,7 +489,7 @@ describe('SimpleCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swapAndStake.address)
+				await cont.initialize(swapAndStake.address, constants.AddressZero)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -538,7 +538,7 @@ describe('SimpleCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swapAndStake.address)
+				await cont.initialize(swapAndStake.address, constants.AddressZero)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -575,6 +575,57 @@ describe('SimpleCollections', () => {
 
 				expect(res).to.equal(false)
 			})
+
+			it('should fail when the token address of the gateway is not WETH', async () => {
+				const cont = await deployWithProxy<SimpleCollections>(
+					'SimpleCollections'
+				)
+				const swapAndStake = await (
+					await ethers.getContractFactory('SwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address, constants.AddressZero)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							gateway.address
+						),
+					],
+					[x]
+				)
+
+				const wethAddress = utils.getAddress(
+					'0x0000000000000000000000000000000000000001'
+				)
+
+				const call = swapAndStake.callStatic.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: wethAddress },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				await expect(call).to.revertedWith('illegal gateway')
+			})
 		})
 	})
 	describe('image', () => {
@@ -593,7 +644,7 @@ describe('SimpleCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swapAndStake.address)
+				await cont.initialize(swapAndStake.address, constants.AddressZero)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -675,7 +726,7 @@ describe('SimpleCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swapAndStake.address)
+				await cont.initialize(swapAndStake.address, constants.AddressZero)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -757,7 +808,7 @@ describe('SimpleCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swapAndStake.address)
+				await cont.initialize(swapAndStake.address, constants.AddressZero)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -832,7 +883,7 @@ describe('SimpleCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swapAndStake.address)
+				await cont.initialize(swapAndStake.address, constants.AddressZero)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -891,7 +942,7 @@ describe('SimpleCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swapAndStake.address)
+				await cont.initialize(swapAndStake.address, constants.AddressZero)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -945,7 +996,7 @@ describe('SimpleCollections', () => {
 				)
 				const [addr1, swapAndStake, swapAndStakeChanged] =
 					await ethers.getSigners()
-				await cont.initialize(swapAndStake.address)
+				await cont.initialize(swapAndStake.address, constants.AddressZero)
 				const owner = await cont.owner()
 				expect(owner).to.equal(addr1.address)
 				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)
@@ -962,7 +1013,7 @@ describe('SimpleCollections', () => {
 				)
 				const [addr1, addr2, swapAndStake, swapAndStakeChanged] =
 					await ethers.getSigners()
-				await cont.initialize(swapAndStake.address)
+				await cont.initialize(swapAndStake.address, constants.AddressZero)
 				const owner = await cont.owner()
 				expect(owner).to.equal(addr1.address)
 				expect(await cont.swapAndStake()).to.equal(swapAndStake.address)

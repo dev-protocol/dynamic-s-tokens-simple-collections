@@ -17,7 +17,7 @@ describe('UpgradeableProxy', () => {
 		const [owner, addr1, swap] = await ethers.getSigners()
 		const proxy = await deployProxy(cont.address, owner.address, data)
 		const proxified = cont.attach(proxy.address).connect(addr1)
-		await proxified.initialize(swap.address)
+		await proxified.initialize(swap.address, constants.AddressZero)
 
 		return [proxy, cont, proxified]
 	}
