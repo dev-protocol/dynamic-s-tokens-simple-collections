@@ -10,7 +10,7 @@ import {
 	type SimpleCollections,
 	type SwapAndStake,
 } from '../typechain-types'
-import { ethers, waffle } from 'hardhat'
+import { ethers } from 'hardhat'
 // Import * as uniswapPair from '../artifacts/@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol/IUniswapV2Pair.json'
 // const { deployMockContract, provider } = waffle
 
@@ -378,7 +378,7 @@ describe('FiatSimpleCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: maticAmount, fee: maticFee },
+					{ input: maticAmount, fee: maticFee, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('1'),
@@ -426,7 +426,7 @@ describe('FiatSimpleCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: maticAmount, fee: maticFee },
+					{ input: maticAmount, fee: maticFee, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('1'),

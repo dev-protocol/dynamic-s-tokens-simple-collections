@@ -325,7 +325,7 @@ describe('SimpleCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -373,7 +373,7 @@ describe('SimpleCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -467,7 +467,7 @@ describe('SimpleCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -512,7 +512,11 @@ describe('SimpleCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: utils.parseEther('0.999'), fee: eth001 },
+					{
+						input: utils.parseEther('0.999'),
+						fee: eth001,
+						token: constants.AddressZero,
+					},
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -557,7 +561,11 @@ describe('SimpleCollections', () => {
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
-					{ input: eth1, fee: utils.parseEther('0.00999') },
+					{
+						input: eth1,
+						fee: utils.parseEther('0.00999'),
+						token: constants.AddressZero,
+					},
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -608,7 +616,7 @@ describe('SimpleCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -690,7 +698,7 @@ describe('SimpleCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -847,7 +855,7 @@ describe('SimpleCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -906,7 +914,7 @@ describe('SimpleCollections', () => {
 				await swapAndStake.__mock(
 					9,
 					gateway.address,
-					{ input: eth1, fee: eth001 },
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
