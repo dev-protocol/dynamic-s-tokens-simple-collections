@@ -5,7 +5,7 @@ import "@devprotocol/i-s-tokens/contracts/interfaces/ITokenURIDescriptor.sol";
 import "@devprotocol/i-s-tokens/contracts/interfaces/ISTokensManagerStruct.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "./interfaces/IProperty.sol";
-import "./interfaces/IDynamicTokenSwapAndStake.sol";
+import "./interfaces/ISwapAndStake.sol";
 
 contract TimeCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	struct Image {
@@ -19,13 +19,13 @@ contract TimeCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		address gateway;
 	}
 
-	IDynamicTokenSwapAndStake public swapAndStake;
+	ISwapAndStake public swapAndStake;
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
 
 	function initialize(address _contract) external initializer {
 		__Ownable_init();
-		swapAndStake = IDynamicTokenSwapAndStake(_contract);
+		swapAndStake = ISwapAndStake(_contract);
 	}
 
 	modifier onlyPropertyAuthor(address _property) {
@@ -35,7 +35,7 @@ contract TimeCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	}
 
 	function setSwapAndStake(address _contract) external onlyOwner {
-		swapAndStake = IDynamicTokenSwapAndStake(_contract);
+		swapAndStake = ISwapAndStake(_contract);
 	}
 
 	function image(
@@ -124,8 +124,9 @@ contract TimeCollections is ITokenURIDescriptor, OwnableUpgradeable {
 			return false;
 		}
 		// Always only allow staking via the SwapAndStake contract.
-		IDynamicTokenSwapAndStake.Amounts memory stakeVia = swapAndStake
-			.gatewayOf(img.gateway);
+		ISwapAndStake.Amounts memory stakeVia = swapAndStake.gatewayOf(
+			img.gateway
+		);
 
 		// Validate the staking position.
 		bool valid = img.requiredTokenAmount <= stakeVia.input &&

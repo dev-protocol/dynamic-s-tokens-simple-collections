@@ -6,7 +6,7 @@ import "@devprotocol/i-s-tokens/contracts/interfaces/ISTokensManagerStruct.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "./interfaces/IProperty.sol";
-import "./interfaces/IDynamicTokenSwapAndStake.sol";
+import "./interfaces/ISwapAndStake.sol";
 
 contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	struct Image {
@@ -19,7 +19,7 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		address token;
 	}
 
-	IDynamicTokenSwapAndStake public swapAndStake;
+	ISwapAndStake public swapAndStake;
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
 	mapping(address => bool) public allowlistedTokens;
@@ -27,7 +27,7 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 	function initialize(address _contract) external initializer {
 		__Ownable_init();
-		swapAndStake = IDynamicTokenSwapAndStake(_contract);
+		swapAndStake = ISwapAndStake(_contract);
 	}
 
 	modifier onlyPropertyAuthor(address _property) {
@@ -41,7 +41,7 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	}
 
 	function setSwapAndStake(address _contract) external onlyOwner {
-		swapAndStake = IDynamicTokenSwapAndStake(_contract);
+		swapAndStake = ISwapAndStake(_contract);
 	}
 
 	function allowListToken(address _token) external onlyOwner {
@@ -145,8 +145,9 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 			valid = img.requiredTokenAmount <= _positions.amount;
 		} else {
 			// Always only allow staking via the SwapAndStake contract.
-			IDynamicTokenSwapAndStake.Amounts memory stakeVia = swapAndStake
-				.gatewayOf(img.gateway);
+			ISwapAndStake.Amounts memory stakeVia = swapAndStake.gatewayOf(
+				img.gateway
+			);
 
 			// Validate the staking position.
 			valid =

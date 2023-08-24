@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MPL-2.0
 pragma solidity 0.8.9;
 
-import "../interfaces/IDynamicTokenSwapAndStake.sol";
+import "../interfaces/ISwapAndStake.sol";
 import "@devprotocol/i-s-tokens/contracts/interfaces/ITokenURIDescriptor.sol";
 import "@devprotocol/i-s-tokens/contracts/interfaces/ISTokensManagerStruct.sol";
 
 contract DynamicTokenSwapAndStake {
 	address public target;
-	mapping(address => IDynamicTokenSwapAndStake.Amounts) public gatewayOf;
+	mapping(address => ISwapAndStake.Amounts) public gatewayOf;
 
 	constructor(address _addr) {
 		target = _addr;
@@ -16,7 +16,7 @@ contract DynamicTokenSwapAndStake {
 	function __mock(
 		uint256 _id,
 		address gateway,
-		IDynamicTokenSwapAndStake.Amounts memory _amounts,
+		ISwapAndStake.Amounts memory _amounts,
 		ISTokensManagerStruct.StakingPositions memory _positions,
 		bytes32 _key
 	) external returns (bool) {

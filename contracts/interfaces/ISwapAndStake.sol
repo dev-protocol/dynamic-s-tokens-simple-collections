@@ -4,6 +4,7 @@ pragma solidity 0.8.9;
 
 interface ISwapAndStake {
 	struct Amounts {
+		address token;
 		uint256 input;
 		uint256 fee;
 	}
