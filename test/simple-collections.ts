@@ -1027,4 +1027,96 @@ describe('SimpleCollections', () => {
 			})
 		})
 	})
+	describe('setWeth', () => {
+		describe('success', () => {
+			it('can set weth', async () => {
+				const cont = await deployWithProxy<SimpleCollections>(
+					'SimpleCollections'
+				)
+				const swapAndStake = await (
+					await ethers.getContractFactory('SwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+				const wethAddress = utils.getAddress(
+					'0x0000000000000000000000000000000000000001'
+				)
+
+				await cont.setWeth(wethAddress)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							eth1,
+							eth001,
+							gateway.address
+						),
+					],
+					[x]
+				)
+
+				const res = await swapAndStake.callStatic.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: wethAddress },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+				expect(res).to.equal(true)
+
+				const wethAddress2 = utils.getAddress(
+					'0x0000000000000000000000000000000000000002'
+				)
+
+				await cont.setWeth(wethAddress2)
+
+				// After changed the weth address
+				const res2 = await swapAndStake.callStatic.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: wethAddress2 },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+				expect(res2).to.equal(true)
+			})
+		})
+		describe('fail', () => {
+			it('cannot set weth if not owner', async () => {
+				const cont = await deployWithProxy<SimpleCollections>(
+					'SimpleCollections'
+				)
+				const [addr1, addr2, swapAndStake] = await ethers.getSigners()
+				await cont.initialize(swapAndStake.address)
+				const owner = await cont.owner()
+				expect(owner).to.equal(addr1.address)
+
+				const wethAddress = utils.getAddress(
+					'0x0000000000000000000000000000000000000001'
+				)
+
+				await expect(
+					cont.connect(addr2).setWeth(wethAddress)
+				).to.be.revertedWith('Ownable: caller is not the owner')
+			})
+		})
+	})
 })
