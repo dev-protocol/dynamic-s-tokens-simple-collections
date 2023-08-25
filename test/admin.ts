@@ -21,7 +21,7 @@ describe('Admin', () => {
 		const proxy = await deployProxy(cont.address, admin.address, data)
 		const proxified = cont.attach(proxy.address)
 		const [swap] = await ethers.getSigners()
-		await proxified.initialize(swap.address, constants.AddressZero)
+		await proxified.initialize(swap.address)
 
 		return [proxy, cont, proxified, admin]
 	}
