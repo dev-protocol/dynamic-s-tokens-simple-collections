@@ -5,6 +5,7 @@ import '@nomiclabs/hardhat-etherscan'
 import '@openzeppelin/hardhat-upgrades'
 import type { HardhatUserConfig } from 'hardhat/config'
 import * as dotenv from 'dotenv'
+import { utils } from 'ethers'
 
 dotenv.config()
 
@@ -45,6 +46,8 @@ const config: HardhatUserConfig = {
 			accounts: {
 				mnemonic: mnemnoc,
 			},
+			gas: 3000000,
+			gasPrice: utils.parseUnits('120', 'gwei').toNumber(),
 		},
 		polygonMumbai: {
 			url: `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_KEY!}`,
