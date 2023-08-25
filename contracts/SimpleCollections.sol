@@ -18,14 +18,13 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	}
 
 	ISwapAndStake public swapAndStake;
-	address private weth;
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
+	address private weth;
 
-	function initialize(address _contract, address _weth) external initializer {
+	function initialize(address _contract) external initializer {
 		__Ownable_init();
 		swapAndStake = ISwapAndStake(_contract);
-		weth = _weth;
 	}
 
 	modifier onlyPropertyAuthor(address _property) {
@@ -36,6 +35,10 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 	function setSwapAndStake(address _contract) external onlyOwner {
 		swapAndStake = ISwapAndStake(_contract);
+	}
+
+	function setWeth(address _weth) external onlyOwner {
+		weth = _weth;
 	}
 
 	function image(

@@ -28,7 +28,7 @@
 						"slot": "0",
 						"type": "t_uint8",
 						"contract": "Initializable",
-						"src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+						"src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:63",
 						"retypedFrom": "bool"
 					},
 					{
@@ -37,7 +37,7 @@
 						"slot": "0",
 						"type": "t_bool",
 						"contract": "Initializable",
-						"src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+						"src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:68"
 					},
 					{
 						"label": "__gap",
@@ -67,7 +67,7 @@
 						"label": "swapAndStake",
 						"offset": 0,
 						"slot": "101",
-						"type": "t_contract(ISwapAndStake)3156",
+						"type": "t_contract(ISwapAndStake)1251",
 						"contract": "SimpleCollections",
 						"src": "contracts/SimpleCollections.sol:20"
 					},
@@ -75,7 +75,7 @@
 						"label": "propertyImages",
 						"offset": 0,
 						"slot": "102",
-						"type": "t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)2685_storage))",
+						"type": "t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)801_storage))",
 						"contract": "SimpleCollections",
 						"src": "contracts/SimpleCollections.sol:21"
 					},
@@ -109,11 +109,11 @@
 						"label": "bytes32",
 						"numberOfBytes": "32"
 					},
-					"t_contract(ISwapAndStake)3156": {
+					"t_contract(ISwapAndStake)1251": {
 						"label": "contract ISwapAndStake",
 						"numberOfBytes": "20"
 					},
-					"t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)2685_storage))": {
+					"t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)801_storage))": {
 						"label": "mapping(address => mapping(bytes32 => struct SimpleCollections.Image))",
 						"numberOfBytes": "32"
 					},
@@ -121,7 +121,7 @@
 						"label": "mapping(address => mapping(uint256 => uint256))",
 						"numberOfBytes": "32"
 					},
-					"t_mapping(t_bytes32,t_struct(Image)2685_storage)": {
+					"t_mapping(t_bytes32,t_struct(Image)801_storage)": {
 						"label": "mapping(bytes32 => struct SimpleCollections.Image)",
 						"numberOfBytes": "32"
 					},
@@ -133,7 +133,7 @@
 						"label": "string",
 						"numberOfBytes": "32"
 					},
-					"t_struct(Image)2685_storage": {
+					"t_struct(Image)801_storage": {
 						"label": "struct SimpleCollections.Image",
 						"members": [
 							{

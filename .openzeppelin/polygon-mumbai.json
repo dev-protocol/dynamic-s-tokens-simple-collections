@@ -72,7 +72,7 @@
 						"label": "swapAndStake",
 						"offset": 0,
 						"slot": "101",
-						"type": "t_contract(ISwapAndStake)5595",
+						"type": "t_contract(ISwapAndStake)1251",
 						"contract": "SimpleCollections",
 						"src": "contracts/SimpleCollections.sol:20"
 					},
@@ -80,7 +80,7 @@
 						"label": "propertyImages",
 						"offset": 0,
 						"slot": "102",
-						"type": "t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)4624_storage))",
+						"type": "t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)801_storage))",
 						"contract": "SimpleCollections",
 						"src": "contracts/SimpleCollections.sol:21"
 					},
@@ -114,11 +114,11 @@
 						"label": "bytes32",
 						"numberOfBytes": "32"
 					},
-					"t_contract(ISwapAndStake)5595": {
+					"t_contract(ISwapAndStake)1251": {
 						"label": "contract ISwapAndStake",
 						"numberOfBytes": "20"
 					},
-					"t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)4624_storage))": {
+					"t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)801_storage))": {
 						"label": "mapping(address => mapping(bytes32 => struct SimpleCollections.Image))",
 						"numberOfBytes": "32"
 					},
@@ -126,7 +126,7 @@
 						"label": "mapping(address => mapping(uint256 => uint256))",
 						"numberOfBytes": "32"
 					},
-					"t_mapping(t_bytes32,t_struct(Image)4624_storage)": {
+					"t_mapping(t_bytes32,t_struct(Image)801_storage)": {
 						"label": "mapping(bytes32 => struct SimpleCollections.Image)",
 						"numberOfBytes": "32"
 					},
@@ -138,7 +138,7 @@
 						"label": "string",
 						"numberOfBytes": "32"
 					},
-					"t_struct(Image)4624_storage": {
+					"t_struct(Image)801_storage": {
 						"label": "struct SimpleCollections.Image",
 						"members": [
 							{
