@@ -20,6 +20,7 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	ISwapAndStake public swapAndStake;
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
+	address private weth;
 
 	function initialize(address _contract) external initializer {
 		__Ownable_init();
@@ -34,6 +35,10 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 	function setSwapAndStake(address _contract) external onlyOwner {
 		swapAndStake = ISwapAndStake(_contract);
+	}
+
+	function setWeth(address _weth) external onlyOwner {
+		weth = _weth;
 	}
 
 	function image(
@@ -121,6 +126,9 @@ contract SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		ISwapAndStake.Amounts memory stakeVia = swapAndStake.gatewayOf(
 			img.gateway
 		);
+
+		// Only allow WETH as the gateway.
+		require(stakeVia.token == weth, "illegal gateway");
 
 		// Validate the staking position.
 		bool valid = img.requiredETHAmount <= stakeVia.input &&
