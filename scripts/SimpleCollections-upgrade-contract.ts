@@ -2,7 +2,8 @@
 import { ethers, upgrades } from 'hardhat'
 import type { SimpleCollections__factory } from '../typechain-types'
 
-const DEPLOYED_ADDRESS = ''
+const DEPLOYED_ADDRESS = '0x672bA772beD905Ad9Ecb924bD9c47eAb156153C0' // Polygon Mumbai
+// const DEPLOYED_ADDRESS = '0xF235ff0A6B33e074daFd98bB4BD2b300c1561339' // Polygon
 
 async function main() {
 	const contract = (await ethers.getContractFactory(
