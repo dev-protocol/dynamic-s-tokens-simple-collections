@@ -52,7 +52,6 @@ contract TimeCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		dev = _dev;
 	}
 
-
 	function image(
 		uint256 id,
 		address,
