@@ -26,6 +26,8 @@ contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	ISwapAndStake public swapAndStake;
 	mapping(address => mapping(bytes32 => Image)) public propertyImages;
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
+	mapping(address => mapping(bytes32 => uint32))
+		public propertyImageClaimedSlots;
 	mapping(address => bool) public allowlistedTokens;
 	address public dev;
 
@@ -106,6 +108,7 @@ contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		Image[] memory _images,
 		bytes32[] memory _keys
 	) external onlyPropertyAuthor(_propertyAddress) {
+		require(_images.length == _keys.length, "Array length mismatch");
 		for (uint256 i = 0; i < _images.length; i++) {
 			Image memory img = _images[i];
 			bytes32 key = _keys[i];
@@ -120,6 +123,30 @@ contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		delete propertyImages[_propertyAddress][_key];
 	}
 
+	function isValidImage(
+		Image memory img,
+		bytes32 key,
+		address property
+	) private view returns (bool) {
+		return
+			// solhint-disable-next-line not-rely-on-time
+			!(img.slot.deadline != 0 && img.slot.deadline < block.timestamp) &&
+			!(img.slot.members != 0 &&
+				img.slot.members <= propertyImageClaimedSlots[property][key]) &&
+			bytes(img.src).length != 0 &&
+			(img.requiredTokenAmount != 0 || img.requiredTokenFee != 0);
+	}
+
+	function isValidStake(
+		Image memory img,
+		ISwapAndStake.Amounts memory stakeVia
+	) private pure returns (bool) {
+		return
+			img.requiredTokenAmount <= stakeVia.input &&
+			img.requiredTokenFee <= stakeVia.fee &&
+			img.token == stakeVia.token;
+	}
+
 	function onBeforeMint(
 		uint256 id,
 		address,
@@ -128,16 +155,7 @@ contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	) external returns (bool) {
 		Image memory img = propertyImages[_positions.property][key];
 
-		// solhint-disable-next-line not-rely-on-time
-		if (img.slot.deadline == 0 && img.slot.deadline < block.timestamp) {
-			return false;
-		}
-		// When not defined the key
-		if (
-			bytes(img.src).length == 0 &&
-			img.requiredTokenAmount == 0 &&
-			img.requiredTokenFee == 0
-		) {
+		if (!isValidImage(img, key, _positions.property)) {
 			return false;
 		}
 		// Always only allow staking via the SwapAndStake contract.
@@ -146,15 +164,15 @@ contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		);
 
 		// Validate the staking position.
-		bool valid = img.requiredTokenAmount <= stakeVia.input &&
-			img.requiredTokenFee <= stakeVia.fee &&
-			img.token == stakeVia.token;
-
-		if (valid) {
+		bool validStake = isValidStake(img, stakeVia);
+		if (validStake) {
 			stakedAmountAtMinted[_positions.property][id] = _positions.amount;
+			if (img.slot.members != 0) {
+				propertyImageClaimedSlots[_positions.property][key]++;
+			}
 		}
 
-		return valid;
+		return validStake;
 	}
 
 	// get time left
@@ -172,5 +190,19 @@ contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		}
 		// solhint-disable-next-line not-rely-on-time
 		return img.slot.deadline - block.timestamp;
+	}
+
+	function getSlotsLeft(
+		address _property,
+		bytes32 _key
+	) external view returns (uint256) {
+		Image memory img = propertyImages[_property][_key];
+		if (
+			img.slot.members == 0 ||
+			img.slot.members == propertyImageClaimedSlots[_property][_key]
+		) {
+			return 0;
+		}
+		return img.slot.members - propertyImageClaimedSlots[_property][_key];
 	}
 }

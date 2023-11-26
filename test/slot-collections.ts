@@ -118,7 +118,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 50),
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -128,7 +128,7 @@ describe('SlotCollections', () => {
 							'Y_SRC',
 							'Y_NAME',
 							'Y_DESC',
-							structSlot(deadline2, 0),
+							structSlot(deadline2, 50),
 							eth1,
 							eth001,
 							token.address,
@@ -174,7 +174,7 @@ describe('SlotCollections', () => {
 									'X_SRC',
 									'X_NAME',
 									'X_DESC',
-									structSlot(deadline1, 0),
+									structSlot(deadline1, 100),
 									utils.parseEther('1'),
 									utils.parseEther('0.01'),
 									constants.AddressZero,
@@ -210,7 +210,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 100),
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -220,7 +220,7 @@ describe('SlotCollections', () => {
 							'Y_SRC',
 							'Y_NAME',
 							'Y_DESC',
-							structSlot(deadline2, 0),
+							structSlot(deadline2, 100),
 							eth1,
 							eth001,
 							token.address,
@@ -283,7 +283,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 100),
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -293,7 +293,7 @@ describe('SlotCollections', () => {
 							'Y_SRC',
 							'Y_NAME',
 							'Y_DESC',
-							structSlot(deadline2, 0),
+							structSlot(deadline2, 100),
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -327,7 +327,100 @@ describe('SlotCollections', () => {
 	})
 	describe('onBeforeMint', () => {
 		describe('success', () => {
-			it('returns true if receives the defined bytes32 key and passes time validation', async () => {
+			it('returns true if receives the defined bytes32 key and passes non-zero time & member validation', async () => {
+				const cont = await deployWithProxy<SlotCollections>('SlotCollections')
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							structSlot(deadline1, 2),
+							eth1,
+							eth001,
+							constants.AddressZero,
+							gateway.address
+						),
+					],
+					[x]
+				)
+				const res = await swapAndStake.callStatic.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(res).to.equal(true)
+			})
+			it('returns true if receives the defined bytes32 key and passes 0 time & non-zero member validation', async () => {
+				const cont = await deployWithProxy<SlotCollections>('SlotCollections')
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							structSlot(0, 2),
+							eth1,
+							eth001,
+							constants.AddressZero,
+							gateway.address
+						),
+					],
+					[x]
+				)
+				const res = await swapAndStake.callStatic.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(res).to.equal(true)
+			})
+			it('returns true if receives the defined bytes32 key and passes non-zero time & 0 member validation', async () => {
 				const cont = await deployWithProxy<SlotCollections>('SlotCollections')
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
@@ -375,7 +468,6 @@ describe('SlotCollections', () => {
 
 				expect(res).to.equal(true)
 			})
-
 			it('update stakedAmountAtMinted when returning true', async () => {
 				const cont = await deployWithProxy<SlotCollections>('SlotCollections')
 
@@ -403,7 +495,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 2),
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -456,7 +548,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 2),
 							eth1,
 							eth001,
 							token.address,
@@ -506,7 +598,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 2),
 							eth1,
 							eth001,
 							token.address,
@@ -534,7 +626,7 @@ describe('SlotCollections', () => {
 			})
 		})
 		describe('fail', () => {
-			it('should fail when deadline is expired', async () => {
+			it('should fail when deadline is expired but members left > 0', async () => {
 				const cont = await deployWithProxy<SlotCollections>('SlotCollections')
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
@@ -560,7 +652,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 2),
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -581,6 +673,207 @@ describe('SlotCollections', () => {
 					1,
 					gateway.address,
 					{ input: eth1, fee: eth001, token: constants.AddressZero },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+				expect(res).to.equal(false)
+			})
+			it('should fail when deadline is not expired but members left == 0 ', async () => {
+				const cont = await deployWithProxy<SlotCollections>('SlotCollections')
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				const slots = 2
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							structSlot(deadline1, slots),
+							eth1,
+							eth001,
+							constants.AddressZero,
+							gateway.address
+						),
+					],
+					[x]
+				)
+				await swapAndStake.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(await cont.getSlotsLeft(property.address, x)).to.equal(slots - 1)
+
+				await swapAndStake.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(await cont.getSlotsLeft(property.address, x)).to.equal(slots - 2)
+
+				const res = await cont.callStatic.onBeforeMint(
+					9,
+					gateway.address,
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(res).to.equal(false)
+			})
+			it('should fail when deadline is expired & members left == 0', async () => {
+				const cont = await deployWithProxy<SlotCollections>('SlotCollections')
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				const slots = 2
+				const currentBlock = await ethers.provider.getBlockNumber()
+				const deadline1 =
+					(await ethers.provider.getBlock(currentBlock)).timestamp + 10000000
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							structSlot(deadline1, slots),
+							eth1,
+							eth001,
+							constants.AddressZero,
+							gateway.address
+						),
+					],
+					[x]
+				)
+				await swapAndStake.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(await cont.getSlotsLeft(property.address, x)).to.equal(slots - 1)
+
+				await swapAndStake.__mock(
+					1,
+					gateway.address,
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(await cont.getSlotsLeft(property.address, x)).to.equal(slots - 2)
+				const currentBlock2 = await ethers.provider.getBlockNumber()
+				const currentTime = (await ethers.provider.getBlock(currentBlock2))
+					.timestamp
+				await ethers.provider.send('evm_setNextBlockTimestamp', [
+					currentTime + deadline1,
+				])
+
+				const res = await cont.callStatic.onBeforeMint(
+					9,
+					gateway.address,
+					structPositions({
+						property: property.address,
+						amount: utils.parseEther('3'),
+					}),
+					x
+				)
+
+				expect(res).to.equal(false)
+			})
+			it('should fail when deadline & members state == 0 value', async () => {
+				const cont = await deployWithProxy<SlotCollections>('SlotCollections')
+				const swapAndStake = await (
+					await ethers.getContractFactory('DynamicTokenSwapAndStake')
+				).deploy(cont.address)
+
+				const [owner, gateway] = await ethers.getSigners()
+
+				const property = await (
+					await ethers.getContractFactory('Property')
+				).deploy(owner.address, 'Testing', 'TEST')
+				await cont.initialize(swapAndStake.address)
+
+				const x = utils.keccak256(utils.toUtf8Bytes('X'))
+				const eth1 = utils.parseEther('1')
+				const eth001 = utils.parseEther('0.01')
+				const slots = 0
+				const deadline1 = 0
+				await cont.setImages(
+					property.address,
+					[
+						structImage(
+							'X_SRC',
+							'X_NAME',
+							'X_DESC',
+							structSlot(deadline1, slots),
+							eth1,
+							eth001,
+							constants.AddressZero,
+							gateway.address
+						),
+					],
+					[x]
+				)
+				expect(await cont.getSlotsLeft(property.address, x)).to.equal(slots)
+
+				const res = await cont.callStatic.onBeforeMint(
+					9,
+					gateway.address,
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -615,7 +908,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 100),
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -663,7 +956,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 100),
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -712,7 +1005,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 100),
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -765,7 +1058,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 100),
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -819,7 +1112,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 100),
 							eth1,
 							eth001,
 							token.address,
@@ -874,7 +1167,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 100),
 							eth1,
 							eth001,
 							token.address,
@@ -922,7 +1215,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 100),
 							eth1,
 							eth001,
 							token.address,
@@ -971,7 +1264,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 100),
 							eth1,
 							eth001,
 							token.address,
@@ -1024,7 +1317,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 100),
 							eth1,
 							eth001,
 							token.address,
@@ -1083,7 +1376,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 100),
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -1169,7 +1462,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 100),
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -1255,7 +1548,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 100),
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -1334,7 +1627,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 100),
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -1397,7 +1690,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							structSlot(deadline1, 100),
 							eth1,
 							eth001,
 							constants.AddressZero,
