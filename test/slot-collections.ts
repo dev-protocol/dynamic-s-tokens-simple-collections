@@ -391,6 +391,7 @@ describe('SlotCollections', () => {
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
+				const slots = 2
 				await cont.setImages(
 					property.address,
 					[
@@ -398,7 +399,7 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(0, 2),
+							structSlot(0, slots),
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -407,6 +408,8 @@ describe('SlotCollections', () => {
 					],
 					[x]
 				)
+				expect(await cont.getSlotsLeft(property.address, x)).to.equal(slots)
+
 				const res = await swapAndStake.callStatic.__mock(
 					1,
 					gateway.address,
@@ -743,9 +746,10 @@ describe('SlotCollections', () => {
 
 				expect(await cont.getSlotsLeft(property.address, x)).to.equal(slots - 2)
 
-				const res = await cont.callStatic.onBeforeMint(
-					9,
+				const res = await swapAndStake.callStatic.__mock(
+					1,
 					gateway.address,
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -823,9 +827,10 @@ describe('SlotCollections', () => {
 					currentTime + deadline1,
 				])
 
-				const res = await cont.callStatic.onBeforeMint(
-					9,
+				const res = await swapAndStake.callStatic.__mock(
+					1,
 					gateway.address,
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
@@ -871,15 +876,17 @@ describe('SlotCollections', () => {
 				)
 				expect(await cont.getSlotsLeft(property.address, x)).to.equal(slots)
 
-				const res = await cont.callStatic.onBeforeMint(
-					9,
+				const res = await swapAndStake.callStatic.__mock(
+					1,
 					gateway.address,
+					{ input: eth1, fee: eth001, token: constants.AddressZero },
 					structPositions({
 						property: property.address,
 						amount: utils.parseEther('3'),
 					}),
 					x
 				)
+
 				expect(res).to.equal(false)
 			})
 			it('should fail to call when the calling is not internal call from SwapAndStake', async () => {
