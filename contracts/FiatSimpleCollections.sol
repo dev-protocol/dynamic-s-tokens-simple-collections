@@ -123,7 +123,7 @@ contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		delete propertyImages[_propertyAddress][_key];
 	}
 
-	function getNativePriceInUsdc() internal view returns (uint) {
+	function getNativePriceInUsdc() internal view returns (uint256) {
 		IUniswapV2Pair pair = IUniswapV2Pair(uniswapPair);
 
 		(uint112 reserve0, uint112 reserve1, ) = pair.getReserves();
@@ -141,7 +141,7 @@ contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	 */
 	function nativeToFiat() external view returns (uint256) {
 		// get the price of ETH/Matic in USD
-		uint nativePriceUsd = getNativePriceInUsdc();
+		uint256 nativePriceUsd = getNativePriceInUsdc();
 
 		// Check fiat value vs USD (ie JPY/USD)
 		uint256 fiatCurrencyToUsd = uint256(
@@ -173,7 +173,7 @@ contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 			img.gateway
 		);
 
-		uint maticPrice = getNativePriceInUsdc();
+		uint256 maticPrice = getNativePriceInUsdc();
 
 		// calculate stake amount in USD
 		UsdAmount memory stakeViaUsd = UsdAmount({
@@ -186,8 +186,9 @@ contract FiatSimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 			IPriceOracle(fiatOracle).latestAnswer() * 1e10
 		);
 
-		uint stakeInputTargetFiat = (stakeViaUsd.amount / currencyToUsd) * 1e18;
-		uint stakeFeeTargetFiat = (stakeViaUsd.fee / currencyToUsd) * 1e18;
+		uint256 stakeInputTargetFiat = (stakeViaUsd.amount / currencyToUsd) *
+			1e18;
+		uint256 stakeFeeTargetFiat = (stakeViaUsd.fee / currencyToUsd) * 1e18;
 
 		// Validate the staking position.
 		bool valid = img.requiredFiatAmount <= stakeInputTargetFiat &&
