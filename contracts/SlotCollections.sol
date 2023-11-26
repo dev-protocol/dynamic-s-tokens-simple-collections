@@ -132,7 +132,8 @@ contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
 			// solhint-disable-next-line not-rely-on-time
 			!(img.slot.deadline != 0 && img.slot.deadline < block.timestamp) &&
 			!(img.slot.members != 0 &&
-				img.slot.members <= propertyImageClaimedSlots[property][key]) && !(img.slot.members == 0 && img.slot.deadline == 0) &&
+				img.slot.members <= propertyImageClaimedSlots[property][key]) &&
+			!(img.slot.members == 0 && img.slot.deadline == 0) &&
 			bytes(img.src).length != 0 &&
 			(img.requiredTokenAmount != 0 || img.requiredTokenFee != 0);
 	}
