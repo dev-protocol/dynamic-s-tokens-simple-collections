@@ -43,21 +43,15 @@ const structRewards = ({
 	withdrawableReward: withdrawableReward ? withdrawableReward : constants.Zero,
 })
 
-type Slot = {
-	deadline: number
-	members: number
-}
 
-const structSlot = (deadline: number, members: number) => ({
-	deadline,
-	members,
-})
+
 
 const structImage = (
 	src: string,
 	name: string,
 	description: string,
-	slot: Slot,
+	deadline: number,
+	members: number,
 	requiredTokenAmount: BigNumberish,
 	requiredTokenFee: BigNumberish,
 	token: string,
@@ -66,7 +60,8 @@ const structImage = (
 	src,
 	name,
 	description,
-	slot,
+	deadline,
+	members,
 	requiredTokenAmount,
 	requiredTokenFee,
 	token,
@@ -118,7 +113,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 50),
+							deadline1, 
+							50,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -128,7 +124,8 @@ describe('SlotCollections', () => {
 							'Y_SRC',
 							'Y_NAME',
 							'Y_DESC',
-							structSlot(deadline2, 50),
+							deadline2, 
+							50,
 							eth1,
 							eth001,
 							token.address,
@@ -142,14 +139,14 @@ describe('SlotCollections', () => {
 				expect(image1.src).to.equal('X_SRC')
 				expect(image1.name).to.equal('X_NAME')
 				expect(image1.description).to.equal('X_DESC')
-				expect(image1.slot.deadline).to.equal(deadline1)
+				expect(image1.deadline).to.equal(deadline1)
 				expect(image1.requiredTokenAmount).to.equal(eth1)
 				expect(image1.requiredTokenFee).to.equal(eth001)
 				expect(image1.token).to.equal(constants.AddressZero)
 				expect(image2.src).to.equal('Y_SRC')
 				expect(image2.name).to.equal('Y_NAME')
 				expect(image2.description).to.equal('Y_DESC')
-				expect(image2.slot.deadline).to.equal(deadline2)
+				expect(image2.deadline).to.equal(deadline2)
 				expect(image2.requiredTokenAmount).to.equal(eth1)
 				expect(image2.requiredTokenFee).to.equal(eth001)
 				expect(image2.token).to.equal(token.address)
@@ -174,7 +171,8 @@ describe('SlotCollections', () => {
 									'X_SRC',
 									'X_NAME',
 									'X_DESC',
-									structSlot(deadline1, 100),
+									deadline1, 
+									100,
 									utils.parseEther('1'),
 									utils.parseEther('0.01'),
 									constants.AddressZero,
@@ -210,7 +208,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 100),
+							deadline1, 
+							100,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -220,7 +219,8 @@ describe('SlotCollections', () => {
 							'Y_SRC',
 							'Y_NAME',
 							'Y_DESC',
-							structSlot(deadline2, 100),
+							deadline2, 
+							100,
 							eth1,
 							eth001,
 							token.address,
@@ -242,7 +242,7 @@ describe('SlotCollections', () => {
 					(await cont.propertyImages(property.address, x)).description
 				).to.equal('X_DESC')
 				expect(
-					(await cont.propertyImages(property.address, x)).slot.deadline
+					(await cont.propertyImages(property.address, x)).deadline
 				).to.equal(deadline1)
 
 				await cont.removeImage(property.address, x)
@@ -257,7 +257,7 @@ describe('SlotCollections', () => {
 					(await cont.propertyImages(property.address, x)).description
 				).to.equal('')
 				expect(
-					(await cont.propertyImages(property.address, x)).slot.deadline
+					(await cont.propertyImages(property.address, x)).deadline
 				).to.equal(0)
 			})
 		})
@@ -283,7 +283,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 100),
+							deadline1, 
+							100,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -293,7 +294,8 @@ describe('SlotCollections', () => {
 							'Y_SRC',
 							'Y_NAME',
 							'Y_DESC',
-							structSlot(deadline2, 100),
+							deadline2, 
+							100,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -316,7 +318,7 @@ describe('SlotCollections', () => {
 				).to.equal('X_DESC')
 
 				expect(
-					(await cont.propertyImages(property.address, x)).slot.deadline
+					(await cont.propertyImages(property.address, x)).deadline
 				).to.equal(deadline1)
 
 				await expect(
@@ -353,7 +355,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 2),
+							deadline1, 
+							2,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -399,7 +402,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(0, slots),
+							0, 
+							slots,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -449,7 +453,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 0),
+							deadline1, 
+							0,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -498,7 +503,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 2),
+							deadline1, 
+							2,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -551,7 +557,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 2),
+							deadline1, 
+							2,
 							eth1,
 							eth001,
 							token.address,
@@ -601,7 +608,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 2),
+							deadline1, 
+							2,
 							eth1,
 							eth001,
 							token.address,
@@ -655,7 +663,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 2),
+							deadline1, 
+							2,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -711,7 +720,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, slots),
+							deadline1, 
+							slots,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -786,7 +796,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, slots),
+							deadline1, 
+							slots,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -865,7 +876,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, slots),
+							deadline1, 
+							slots,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -915,7 +927,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 100),
+							deadline1, 
+							100,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -963,7 +976,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 100),
+							deadline1, 
+							100,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -1012,7 +1026,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 100),
+							deadline1, 
+							100,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -1065,7 +1080,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 100),
+							deadline1, 
+							100,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -1119,7 +1135,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 100),
+							deadline1, 
+							100,
 							eth1,
 							eth001,
 							token.address,
@@ -1174,7 +1191,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 100),
+							deadline1, 
+							100,
 							eth1,
 							eth001,
 							token.address,
@@ -1222,7 +1240,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 100),
+							deadline1, 
+							100,
 							eth1,
 							eth001,
 							token.address,
@@ -1271,7 +1290,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 100),
+							deadline1, 
+							100,
 							eth1,
 							eth001,
 							token.address,
@@ -1324,7 +1344,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 100),
+							deadline1, 
+							100,
 							eth1,
 							eth001,
 							token.address,
@@ -1383,7 +1404,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 100),
+							deadline1, 
+							100,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -1469,7 +1491,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 100),
+							deadline1, 
+							100,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -1555,7 +1578,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 100),
+							deadline1, 
+							100,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -1634,7 +1658,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 100),
+							deadline1, 
+							100,
 							eth1,
 							eth001,
 							constants.AddressZero,
@@ -1697,7 +1722,8 @@ describe('SlotCollections', () => {
 							'X_SRC',
 							'X_NAME',
 							'X_DESC',
-							structSlot(deadline1, 100),
+							deadline1, 
+							100,
 							eth1,
 							eth001,
 							constants.AddressZero,

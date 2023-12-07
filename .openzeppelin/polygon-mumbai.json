@@ -23,6 +23,11 @@
       "address": "0x66E0400432A7A910f529694Dd4E871dEaf90B1C1",
       "txHash": "0x5dc5d20576cdef33f6d5f4344a42d29c94b10f5d0b878004195f99b68bdee173",
       "kind": "transparent"
+    },
+    {
+      "address": "0x40be0Bc51523E6eF9b1d7F98B8545859efC708c1",
+      "txHash": "0x3e1ae14e34ce13a42ca11f1e2d341fa201777d0f1c03cabb88a0756fb75a562c",
+      "kind": "transparent"
     }
   ],
   "impls": {
@@ -793,6 +798,234 @@
               }
             ],
             "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "03e672d8ed5757623ff4254d19055f1c7a441b4b13e413e0b2e9968ebbb18fe8": {
+      "address": "0x4785a6719df9401215126EF6653dCDBEe38b0969",
+      "txHash": "0x384288faa0078c55f3716595b499eab6e402ac5375feacd6f1ebe688b7b69859",
+      "layout": {
+        "solcVersion": "0.8.9",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:94"
+          },
+          {
+            "label": "swapAndStake",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_contract(ISwapAndStake)6309",
+            "contract": "SlotCollections",
+            "src": "contracts/SlotCollections.sol:24"
+          },
+          {
+            "label": "propertyImages",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)5060_storage))",
+            "contract": "SlotCollections",
+            "src": "contracts/SlotCollections.sol:25"
+          },
+          {
+            "label": "stakedAmountAtMinted",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "contract": "SlotCollections",
+            "src": "contracts/SlotCollections.sol:26"
+          },
+          {
+            "label": "propertyImageClaimedSlots",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_uint32))",
+            "contract": "SlotCollections",
+            "src": "contracts/SlotCollections.sol:27"
+          },
+          {
+            "label": "allowlistedTokens",
+            "offset": 0,
+            "slot": "105",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "SlotCollections",
+            "src": "contracts/SlotCollections.sol:29"
+          },
+          {
+            "label": "dev",
+            "offset": 0,
+            "slot": "106",
+            "type": "t_address",
+            "contract": "SlotCollections",
+            "src": "contracts/SlotCollections.sol:30"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(ISwapAndStake)6309": {
+            "label": "contract ISwapAndStake",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)5060_storage))": {
+            "label": "mapping(address => mapping(bytes32 => struct SlotCollections.Image))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_bytes32,t_uint32))": {
+            "label": "mapping(address => mapping(bytes32 => uint32))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
+            "label": "mapping(address => mapping(uint256 => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(Image)5060_storage)": {
+            "label": "mapping(bytes32 => struct SlotCollections.Image)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_uint32)": {
+            "label": "mapping(bytes32 => uint32)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Image)5060_storage": {
+            "label": "struct SlotCollections.Image",
+            "members": [
+              {
+                "label": "src",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "name",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "description",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "deadline",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "members",
+                "type": "t_uint32",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "requiredTokenAmount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "requiredTokenFee",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "token",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "7"
+              },
+              {
+                "label": "gateway",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "8"
+              }
+            ],
+            "numberOfBytes": "288"
           },
           "t_uint256": {
             "label": "uint256",

@@ -8,15 +8,13 @@ import "./interfaces/IProperty.sol";
 import "./interfaces/ISwapAndStake.sol";
 
 contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
-	struct SlotType {
-		uint256 deadline;
-		uint32 members;
-	}
+
 	struct Image {
 		string src;
 		string name;
 		string description;
-		SlotType slot;
+		uint256 deadline;
+		uint32 members;
 		uint256 requiredTokenAmount;
 		uint256 requiredTokenFee;
 		address token;
@@ -130,10 +128,10 @@ contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	) private view returns (bool) {
 		return
 			// solhint-disable-next-line not-rely-on-time
-			!(img.slot.deadline != 0 && img.slot.deadline < block.timestamp) &&
-			!(img.slot.members != 0 &&
-				img.slot.members <= propertyImageClaimedSlots[property][key]) &&
-			!(img.slot.members == 0 && img.slot.deadline == 0) &&
+			!(img.deadline != 0 && img.deadline < block.timestamp) &&
+			!(img.members != 0 &&
+				img.members <= propertyImageClaimedSlots[property][key]) &&
+			!(img.members == 0 && img.deadline == 0) &&
 			bytes(img.src).length != 0 &&
 			(img.requiredTokenAmount != 0 || img.requiredTokenFee != 0);
 	}
@@ -168,7 +166,7 @@ contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		bool validStake = isValidStake(img, stakeVia);
 		if (validStake) {
 			stakedAmountAtMinted[_positions.property][id] = _positions.amount;
-			if (img.slot.members != 0) {
+			if (img.members != 0) {
 				propertyImageClaimedSlots[_positions.property][key]++;
 			}
 		}
@@ -182,15 +180,15 @@ contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		bytes32 _key
 	) external view returns (uint256) {
 		Image memory img = propertyImages[_property][_key];
-		if (img.slot.deadline == 0) {
+		if (img.deadline == 0) {
 			return 0;
 		}
 		// solhint-disable-next-line not-rely-on-time
-		if (img.slot.deadline < block.timestamp) {
+		if (img.deadline < block.timestamp) {
 			return 0;
 		}
 		// solhint-disable-next-line not-rely-on-time
-		return img.slot.deadline - block.timestamp;
+		return img.deadline - block.timestamp;
 	}
 
 	function getSlotsLeft(
@@ -199,11 +197,11 @@ contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	) external view returns (uint256) {
 		Image memory img = propertyImages[_property][_key];
 		if (
-			img.slot.members == 0 ||
-			img.slot.members == propertyImageClaimedSlots[_property][_key]
+			img.members == 0 ||
+			img.members == propertyImageClaimedSlots[_property][_key]
 		) {
 			return 0;
 		}
-		return img.slot.members - propertyImageClaimedSlots[_property][_key];
+		return img.members - propertyImageClaimedSlots[_property][_key];
 	}
 }

@@ -2,7 +2,7 @@
 import { ethers, upgrades } from 'hardhat'
 import type { TimeCollections__factory } from '../typechain-types'
 
-const SWAP_And_STAKE_ADDRESS = ''
+const SWAP_And_STAKE_ADDRESS = '0x927B51D9Edd43BFDE3586E99BfaCBE08135374AA'
 
 async function main() {
 	const contract = (await ethers.getContractFactory(
