@@ -8,7 +8,6 @@ import "./interfaces/IProperty.sol";
 import "./interfaces/ISwapAndStake.sol";
 
 contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
-
 	struct Image {
 		string src;
 		string name;
