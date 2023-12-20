@@ -126,13 +126,26 @@ contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		address property
 	) private view returns (bool) {
 		return
-			// solhint-disable-next-line not-rely-on-time
-			!(img.deadline != 0 && img.deadline < block.timestamp) &&
-			!(img.members != 0 &&
-				img.members <= propertyImageClaimedSlots[property][key]) &&
-			!(img.members == 0 && img.deadline == 0) &&
-			bytes(img.src).length != 0 &&
-			(img.requiredTokenAmount != 0 || img.requiredTokenFee != 0);
+			(
+				// If deadline is set, validates it.
+				img.deadline > 0
+				// solhint-disable-next-line not-rely-on-time
+				? img.deadline > block.timestamp
+				: true
+			)
+			&&
+			(
+				// If members is set, validates it.
+				img.members > 0
+				? img.members > propertyImageClaimedSlots[property][key]
+				: true
+			)
+			&&
+			(
+				img.deadline > 0 || img.members > 0
+			)
+			&&
+			bytes(img.src).length != 0;
 	}
 
 	function isValidStake(

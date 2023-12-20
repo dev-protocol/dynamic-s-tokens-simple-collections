@@ -540,6 +540,7 @@ describe('SlotCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
+				await cont.allowListToken(token.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -591,6 +592,7 @@ describe('SlotCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
+				await cont.allowListToken(token.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -1118,6 +1120,7 @@ describe('SlotCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
+				await cont.allowListToken(token.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -1173,6 +1176,7 @@ describe('SlotCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
+				await cont.allowListToken(token.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -1222,6 +1226,7 @@ describe('SlotCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
+				await cont.allowListToken(token.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -1272,6 +1277,7 @@ describe('SlotCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
+				await cont.allowListToken(token.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -1326,6 +1332,7 @@ describe('SlotCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
+				await cont.allowListToken(token.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
