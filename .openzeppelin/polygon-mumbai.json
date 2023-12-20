@@ -25,8 +25,8 @@
       "kind": "transparent"
     },
     {
-      "address": "0x40be0Bc51523E6eF9b1d7F98B8545859efC708c1",
-      "txHash": "0x3e1ae14e34ce13a42ca11f1e2d341fa201777d0f1c03cabb88a0756fb75a562c",
+      "address": "0x1d82F8BA629dDfC1Ca971C38d03E087D64Cfd531",
+      "txHash": "0x00a1e13d26320acfc42a8c362852c1a274a3d04d2b9388d0eb674004cd107a44",
       "kind": "transparent"
     }
   ],
@@ -815,8 +815,8 @@
       }
     },
     "03e672d8ed5757623ff4254d19055f1c7a441b4b13e413e0b2e9968ebbb18fe8": {
-      "address": "0x4785a6719df9401215126EF6653dCDBEe38b0969",
-      "txHash": "0x384288faa0078c55f3716595b499eab6e402ac5375feacd6f1ebe688b7b69859",
+      "address": "0xd12cb0CCf5Cd68Fcd2A6c78AAb8b68a1bF587313",
+      "txHash": "0xd5ee9d99075e0971fe1a5c5b6892b620b4b962d072ec97cfe8ceb4ef7a4f5732",
       "layout": {
         "solcVersion": "0.8.9",
         "storage": [
@@ -865,17 +865,17 @@
             "label": "swapAndStake",
             "offset": 0,
             "slot": "101",
-            "type": "t_contract(ISwapAndStake)6309",
+            "type": "t_contract(ISwapAndStake)1503",
             "contract": "SlotCollections",
-            "src": "contracts/SlotCollections.sol:24"
+            "src": "contracts/SlotCollections.sol:23"
           },
           {
             "label": "propertyImages",
             "offset": 0,
             "slot": "102",
-            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)5060_storage))",
+            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)804_storage))",
             "contract": "SlotCollections",
-            "src": "contracts/SlotCollections.sol:25"
+            "src": "contracts/SlotCollections.sol:24"
           },
           {
             "label": "stakedAmountAtMinted",
@@ -883,7 +883,7 @@
             "slot": "103",
             "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
             "contract": "SlotCollections",
-            "src": "contracts/SlotCollections.sol:26"
+            "src": "contracts/SlotCollections.sol:25"
           },
           {
             "label": "propertyImageClaimedSlots",
@@ -891,7 +891,7 @@
             "slot": "104",
             "type": "t_mapping(t_address,t_mapping(t_bytes32,t_uint32))",
             "contract": "SlotCollections",
-            "src": "contracts/SlotCollections.sol:27"
+            "src": "contracts/SlotCollections.sol:26"
           },
           {
             "label": "allowlistedTokens",
@@ -899,7 +899,7 @@
             "slot": "105",
             "type": "t_mapping(t_address,t_bool)",
             "contract": "SlotCollections",
-            "src": "contracts/SlotCollections.sol:29"
+            "src": "contracts/SlotCollections.sol:28"
           },
           {
             "label": "dev",
@@ -907,7 +907,7 @@
             "slot": "106",
             "type": "t_address",
             "contract": "SlotCollections",
-            "src": "contracts/SlotCollections.sol:30"
+            "src": "contracts/SlotCollections.sol:29"
           }
         ],
         "types": {
@@ -931,7 +931,7 @@
             "label": "bytes32",
             "numberOfBytes": "32"
           },
-          "t_contract(ISwapAndStake)6309": {
+          "t_contract(ISwapAndStake)1503": {
             "label": "contract ISwapAndStake",
             "numberOfBytes": "20"
           },
@@ -939,7 +939,7 @@
             "label": "mapping(address => bool)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)5060_storage))": {
+          "t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)804_storage))": {
             "label": "mapping(address => mapping(bytes32 => struct SlotCollections.Image))",
             "numberOfBytes": "32"
           },
@@ -951,7 +951,7 @@
             "label": "mapping(address => mapping(uint256 => uint256))",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(Image)5060_storage)": {
+          "t_mapping(t_bytes32,t_struct(Image)804_storage)": {
             "label": "mapping(bytes32 => struct SlotCollections.Image)",
             "numberOfBytes": "32"
           },
@@ -967,7 +967,7 @@
             "label": "string",
             "numberOfBytes": "32"
           },
-          "t_struct(Image)5060_storage": {
+          "t_struct(Image)804_storage": {
             "label": "struct SlotCollections.Image",
             "members": [
               {
