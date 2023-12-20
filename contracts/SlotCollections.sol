@@ -128,9 +128,8 @@ contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		return
 			(
 				// If deadline is set, validates it.
-				img.deadline > 0
-					? // solhint-disable-next-line not-rely-on-time
-					img.deadline > block.timestamp
+				img.deadline > 0 // solhint-disable-next-line not-rely-on-time
+					? img.deadline > block.timestamp
 					: true
 			) &&
 			(
