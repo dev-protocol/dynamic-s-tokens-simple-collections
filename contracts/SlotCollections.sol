@@ -150,8 +150,7 @@ contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		if (img.token == dev) {
 			// Validate the staking position.
 			return img.requiredTokenAmount <= _positions.amount;
-		}
-		else{
+		} else {
 			return
 				img.requiredTokenAmount <= stakeVia.input &&
 				img.requiredTokenFee <= stakeVia.fee &&
