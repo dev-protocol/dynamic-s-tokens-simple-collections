@@ -131,7 +131,10 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		ISTokensManagerStruct.StakingPositions memory _positions,
 		bytes32 key
 	) external returns (bool) {
-		require(msg.sender == sTokenManager || msg.sender == address(swapAndStake), "illegal access");
+		require(
+			msg.sender == sTokenManager || msg.sender == address(swapAndStake),
+			"illegal access"
+		);
 		Image memory img = propertyImages[_positions.property][key];
 
 		// When not defined the key
