@@ -144,12 +144,20 @@ contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 	function isValidStake(
 		Image memory img,
-		ISwapAndStake.Amounts memory stakeVia
-	) private pure returns (bool) {
-		return
-			img.requiredTokenAmount <= stakeVia.input &&
-			img.requiredTokenFee <= stakeVia.fee &&
-			img.token == stakeVia.token;
+		ISwapAndStake.Amounts memory stakeVia,
+		ISTokensManagerStruct.StakingPositions memory _positions
+	) private view returns (bool) {
+		if (img.token == dev) {
+			// Validate the staking position.
+			return img.requiredTokenAmount <= _positions.amount;
+		}
+		else{
+			return
+				img.requiredTokenAmount <= stakeVia.input &&
+				img.requiredTokenFee <= stakeVia.fee &&
+				allowlistedTokens[img.token] && // Ensure other contract are using allowlisted tokens.
+				img.token == stakeVia.token; // Validate that token used is same as expected token.
+		}
 	}
 
 	function onBeforeMint(
@@ -169,7 +177,7 @@ contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		);
 
 		// Validate the staking position.
-		bool validStake = isValidStake(img, stakeVia);
+		bool validStake = isValidStake(img, stakeVia, _positions);
 		if (validStake) {
 			stakedAmountAtMinted[_positions.property][id] = _positions.amount;
 			if (img.members != 0) {
