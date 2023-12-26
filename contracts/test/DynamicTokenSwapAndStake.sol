@@ -22,11 +22,7 @@ contract DynamicTokenSwapAndStake {
 		bytes32 _key
 	) external returns (bool) {
 		gatewayOf[gateway] = _amounts;
-		bool res = IMockSToken(sTokenTarget).__mock(
-			_id,
-			_positions,
-			_key
-		);
+		bool res = IMockSToken(sTokenTarget).__mock(_id, _positions, _key);
 
 		delete gatewayOf[gateway];
 

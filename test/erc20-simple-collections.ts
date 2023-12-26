@@ -547,15 +547,17 @@ describe('ERC20SimpleCollections', () => {
 					[x]
 				)
 
-				await expect(cont.callStatic.onBeforeMint(
-					9,
-					gateway.address,
-					structPositions({
-						property: property.address,
-						amount: utils.parseEther('3'),
-					}),
-					x
-				)).to.be.revertedWith('illegal access')
+				await expect(
+					cont.callStatic.onBeforeMint(
+						9,
+						gateway.address,
+						structPositions({
+							property: property.address,
+							amount: utils.parseEther('3'),
+						}),
+						x
+					)
+				).to.be.revertedWith('illegal access')
 			})
 
 			it('returns false if the received bytes32 key is not defined', async () => {
@@ -902,7 +904,7 @@ describe('ERC20SimpleCollections', () => {
 				await cont.initialize(swapAndStake.address)
 				await cont.allowListToken(token.address)
 				await cont.setSTokenManager(stoken.address)
-				
+
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
