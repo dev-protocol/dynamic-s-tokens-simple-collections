@@ -4,16 +4,17 @@ pragma solidity 0.8.9;
 import "../interfaces/ISwapAndStake.sol";
 import "@devprotocol/i-s-tokens/contracts/interfaces/ITokenURIDescriptor.sol";
 import "@devprotocol/i-s-tokens/contracts/interfaces/ISTokensManagerStruct.sol";
+import "./IMockSToken.sol";
 
 contract DynamicTokenSwapAndStake {
-	address public target;
+	address public sTokenTarget;
 	mapping(address => ISwapAndStake.Amounts) public gatewayOf;
 
 	constructor(address _addr) {
-		target = _addr;
+		sTokenTarget = _addr;
 	}
 
-	function __mock(
+	function __mockSwapAndStake(
 		uint256 _id,
 		address gateway,
 		ISwapAndStake.Amounts memory _amounts,
@@ -21,9 +22,8 @@ contract DynamicTokenSwapAndStake {
 		bytes32 _key
 	) external returns (bool) {
 		gatewayOf[gateway] = _amounts;
-		bool res = ITokenURIDescriptor(target).onBeforeMint(
+		bool res = IMockSToken(sTokenTarget).__mock(
 			_id,
-			msg.sender,
 			_positions,
 			_key
 		);

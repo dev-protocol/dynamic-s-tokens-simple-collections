@@ -5,7 +5,7 @@ import "../interfaces/ISwapAndStake.sol";
 import "@devprotocol/i-s-tokens/contracts/interfaces/ITokenURIDescriptor.sol";
 import "@devprotocol/i-s-tokens/contracts/interfaces/ISTokensManagerStruct.sol";
 
-contract MockLockup {
+contract MockSToken {
 	address public target;
 
 	constructor(address _addr) {
