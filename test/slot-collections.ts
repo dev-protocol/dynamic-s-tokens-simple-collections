@@ -81,9 +81,9 @@ describe('SlotCollections', () => {
 				const [, addr2, addr3] = await ethers.getSigners()
 				await cont.initialize(addr2.address, addr3.address)
 
-				await expect(cont.initialize(addr2.address, addr3.address)).to.be.revertedWith(
-					'Initializable: contract is already initialized'
-				)
+				await expect(
+					cont.initialize(addr2.address, addr3.address)
+				).to.be.revertedWith('Initializable: contract is already initialized')
 			})
 		})
 	})
@@ -168,7 +168,7 @@ describe('SlotCollections', () => {
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(stoken.address)
-				await cont.initialize(swapAndStake.address,stoken.address)
+				await cont.initialize(swapAndStake.address, stoken.address)
 				const deadline1 = (await ethers.provider.getBlock(1)).timestamp + 100
 				await expect(
 					cont
@@ -208,7 +208,7 @@ describe('SlotCollections', () => {
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(stoken.address)
-				await cont.initialize(swapAndStake.address,stoken.address)
+				await cont.initialize(swapAndStake.address, stoken.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const y = utils.keccak256(utils.toUtf8Bytes('Y'))
@@ -289,7 +289,7 @@ describe('SlotCollections', () => {
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(stoken.address)
-				await cont.initialize(swapAndStake.address,stoken.address)
+				await cont.initialize(swapAndStake.address, stoken.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const y = utils.keccak256(utils.toUtf8Bytes('Y'))
@@ -362,7 +362,7 @@ describe('SlotCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swapAndStake.address,stoken.address)
+				await cont.initialize(swapAndStake.address, stoken.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -412,7 +412,7 @@ describe('SlotCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swapAndStake.address,stoken.address)
+				await cont.initialize(swapAndStake.address, stoken.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -462,7 +462,7 @@ describe('SlotCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swapAndStake.address,stoken.address)
+				await cont.initialize(swapAndStake.address, stoken.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -513,7 +513,7 @@ describe('SlotCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swapAndStake.address,stoken.address)
+				await cont.initialize(swapAndStake.address, stoken.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -568,7 +568,7 @@ describe('SlotCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swapAndStake.address,stoken.address)
+				await cont.initialize(swapAndStake.address, stoken.address)
 				await cont.allowListToken(token.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
@@ -621,7 +621,7 @@ describe('SlotCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swapAndStake.address,stoken.address)
+				await cont.initialize(swapAndStake.address, stoken.address)
 				await cont.allowListToken(token.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
@@ -678,7 +678,7 @@ describe('SlotCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swapAndStake.address,stoken.address)
+				await cont.initialize(swapAndStake.address, stoken.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -735,7 +735,7 @@ describe('SlotCollections', () => {
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
-				await cont.initialize(swapAndStake.address,stoken.address)
+				await cont.initialize(swapAndStake.address, stoken.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -979,15 +979,17 @@ describe('SlotCollections', () => {
 					[x]
 				)
 
-				await expect(cont.callStatic.onBeforeMint(
-					9,
-					gateway.address,
-					structPositions({
-						property: property.address,
-						amount: utils.parseEther('3'),
-					}),
-					x
-				)).to.be.revertedWith('illegal access')
+				await expect(
+					cont.callStatic.onBeforeMint(
+						9,
+						gateway.address,
+						structPositions({
+							property: property.address,
+							amount: utils.parseEther('3'),
+						}),
+						x
+					)
+				).to.be.revertedWith('illegal access')
 			})
 
 			it('returns false if the received bytes32 key is not defined', async () => {
@@ -1261,15 +1263,17 @@ describe('SlotCollections', () => {
 					[x]
 				)
 
-				await expect(cont.callStatic.onBeforeMint(
-					9,
-					gateway.address,
-					structPositions({
-						property: property.address,
-						amount: utils.parseEther('3'),
-					}),
-					x
-				)).to.be.revertedWith('illegal access')
+				await expect(
+					cont.callStatic.onBeforeMint(
+						9,
+						gateway.address,
+						structPositions({
+							property: property.address,
+							amount: utils.parseEther('3'),
+						}),
+						x
+					)
+				).to.be.revertedWith('illegal access')
 			})
 
 			it('[ERC20] returns false if the received bytes32 key is not defined', async () => {
@@ -1854,8 +1858,7 @@ describe('SlotCollections', () => {
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(stoken.address)
-				const [addr1, swapAndStakeChanged] =
-					await ethers.getSigners()
+				const [addr1, swapAndStakeChanged] = await ethers.getSigners()
 				await cont.initialize(swapAndStake.address, stoken.address)
 				const owner = await cont.owner()
 				expect(owner).to.equal(addr1.address)
@@ -1875,8 +1878,7 @@ describe('SlotCollections', () => {
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
 				).deploy(stoken.address)
-				const [addr1, addr2, swapAndStakeChanged] =
-					await ethers.getSigners()
+				const [addr1, addr2, swapAndStakeChanged] = await ethers.getSigners()
 				await cont.initialize(swapAndStake.address, stoken.address)
 				const owner = await cont.owner()
 				expect(owner).to.equal(addr1.address)
