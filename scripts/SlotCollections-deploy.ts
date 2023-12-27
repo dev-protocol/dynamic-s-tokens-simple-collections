@@ -14,9 +14,7 @@ async function main() {
 	const admin = await upgrades.deployProxyAdmin()
 	const deployedContract = await upgrades.deployProxy(
 		contract,
-		[SWAP_And_STAKE_ADDRESS,
-		SToken_ADDRESS
-		],
+		[SWAP_And_STAKE_ADDRESS, SToken_ADDRESS],
 		{ initializer: 'initialize' }
 	)
 
