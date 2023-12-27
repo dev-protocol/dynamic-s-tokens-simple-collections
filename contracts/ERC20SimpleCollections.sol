@@ -24,6 +24,7 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	mapping(address => mapping(uint256 => uint256)) public stakedAmountAtMinted;
 	mapping(address => bool) public allowlistedTokens;
 	address public dev;
+	address public sTokenManager;
 
 	function initialize(address _contract) external initializer {
 		__Ownable_init();
@@ -54,6 +55,10 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 
 	function setDevToken(address _dev) external onlyOwner {
 		dev = _dev;
+	}
+
+	function setSTokenManager(address _sTokenManager) external onlyOwner {
+		sTokenManager = _sTokenManager;
 	}
 
 	function image(
@@ -126,6 +131,7 @@ contract ERC20SimpleCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		ISTokensManagerStruct.StakingPositions memory _positions,
 		bytes32 key
 	) external returns (bool) {
+		require(msg.sender == sTokenManager, "illegal access");
 		Image memory img = propertyImages[_positions.property][key];
 
 		// When not defined the key

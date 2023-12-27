@@ -352,9 +352,12 @@ describe('ERC20SimpleCollections', () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
+				const stoken = await (
+					await ethers.getContractFactory('MockSToken')
+				).deploy(cont.address)
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
-				).deploy(cont.address)
+				).deploy(stoken.address)
 
 				const [owner, gateway, token] = await ethers.getSigners()
 
@@ -363,6 +366,7 @@ describe('ERC20SimpleCollections', () => {
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
 				await cont.allowListToken(token.address)
+				await cont.setSTokenManager(stoken.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -383,7 +387,7 @@ describe('ERC20SimpleCollections', () => {
 					[x]
 				)
 
-				const res = await swapAndStake.callStatic.__mock(
+				const res = await swapAndStake.callStatic.__mockSwapAndStake(
 					1,
 					gateway.address,
 					{ input: eth1, fee: eth001, token: token.address },
@@ -402,9 +406,12 @@ describe('ERC20SimpleCollections', () => {
 					'ERC20SimpleCollections'
 				)
 
+				const stoken = await (
+					await ethers.getContractFactory('MockSToken')
+				).deploy(cont.address)
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
-				).deploy(cont.address)
+				).deploy(stoken.address)
 
 				const [owner, gateway, token] = await ethers.getSigners()
 
@@ -413,6 +420,7 @@ describe('ERC20SimpleCollections', () => {
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
 				await cont.allowListToken(token.address)
+				await cont.setSTokenManager(stoken.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -433,7 +441,7 @@ describe('ERC20SimpleCollections', () => {
 					[x]
 				)
 
-				await swapAndStake.__mock(
+				await swapAndStake.__mockSwapAndStake(
 					9,
 					gateway.address,
 					{ input: eth1, fee: eth001, token: token.address },
@@ -453,12 +461,13 @@ describe('ERC20SimpleCollections', () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
-				const lockup = await (
-					await ethers.getContractFactory('MockLockup')
+
+				const stoken = await (
+					await ethers.getContractFactory('MockSToken')
 				).deploy(cont.address)
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
-				).deploy(cont.address)
+				).deploy(stoken.address)
 
 				const [owner, gateway, dev] = await ethers.getSigners()
 
@@ -468,6 +477,7 @@ describe('ERC20SimpleCollections', () => {
 				await cont.initialize(swapAndStake.address)
 				await cont.allowListToken(dev.address)
 				await cont.setDevToken(dev.address)
+				await cont.setSTokenManager(stoken.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const devAmount = utils.parseEther('1')
@@ -488,7 +498,7 @@ describe('ERC20SimpleCollections', () => {
 					[x]
 				)
 
-				const res = await lockup.callStatic.__mock(
+				const res = await stoken.callStatic.__mock(
 					1,
 					structPositions({
 						property: property.address,
@@ -506,9 +516,12 @@ describe('ERC20SimpleCollections', () => {
 					'ERC20SimpleCollections'
 				)
 
+				const stoken = await (
+					await ethers.getContractFactory('MockSToken')
+				).deploy(cont.address)
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
-				).deploy(cont.address)
+				).deploy(stoken.address)
 				const [owner, gateway] = await ethers.getSigners()
 				const property = await (
 					await ethers.getContractFactory('Property')
@@ -534,17 +547,17 @@ describe('ERC20SimpleCollections', () => {
 					[x]
 				)
 
-				const res = await cont.callStatic.onBeforeMint(
-					9,
-					gateway.address,
-					structPositions({
-						property: property.address,
-						amount: utils.parseEther('3'),
-					}),
-					x
-				)
-
-				expect(res).to.equal(false)
+				await expect(
+					cont.callStatic.onBeforeMint(
+						9,
+						gateway.address,
+						structPositions({
+							property: property.address,
+							amount: utils.parseEther('3'),
+						}),
+						x
+					)
+				).to.be.revertedWith('illegal access')
 			})
 
 			it('returns false if the received bytes32 key is not defined', async () => {
@@ -552,15 +565,20 @@ describe('ERC20SimpleCollections', () => {
 					'ERC20SimpleCollections'
 				)
 
+				const stoken = await (
+					await ethers.getContractFactory('MockSToken')
+				).deploy(cont.address)
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
-				).deploy(cont.address)
+				).deploy(stoken.address)
 				const [owner, gateway, token] = await ethers.getSigners()
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
 				await cont.allowListToken(token.address)
+				await cont.setSTokenManager(stoken.address)
+
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -580,7 +598,7 @@ describe('ERC20SimpleCollections', () => {
 					[x]
 				)
 
-				const res = await swapAndStake.callStatic.__mock(
+				const res = await swapAndStake.callStatic.__mockSwapAndStake(
 					1,
 					gateway.address,
 					{ input: eth1, fee: eth001, token: token.address },
@@ -598,15 +616,21 @@ describe('ERC20SimpleCollections', () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
+
+				const stoken = await (
+					await ethers.getContractFactory('MockSToken')
+				).deploy(cont.address)
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
-				).deploy(cont.address)
+				).deploy(stoken.address)
 				const [owner, gateway, token] = await ethers.getSigners()
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
 				await cont.allowListToken(token.address)
+				await cont.setSTokenManager(stoken.address)
+
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -626,7 +650,7 @@ describe('ERC20SimpleCollections', () => {
 					[x]
 				)
 
-				const res = await swapAndStake.callStatic.__mock(
+				const res = await swapAndStake.callStatic.__mockSwapAndStake(
 					1,
 					gateway.address,
 					{
@@ -648,15 +672,21 @@ describe('ERC20SimpleCollections', () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
+
+				const stoken = await (
+					await ethers.getContractFactory('MockSToken')
+				).deploy(cont.address)
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
-				).deploy(cont.address)
+				).deploy(stoken.address)
 				const [owner, gateway, token] = await ethers.getSigners()
 				const property = await (
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
 				await cont.allowListToken(token.address)
+				await cont.setSTokenManager(stoken.address)
+
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -676,7 +706,7 @@ describe('ERC20SimpleCollections', () => {
 					[x]
 				)
 
-				const res = await swapAndStake.callStatic.__mock(
+				const res = await swapAndStake.callStatic.__mockSwapAndStake(
 					1,
 					gateway.address,
 					{
@@ -698,9 +728,13 @@ describe('ERC20SimpleCollections', () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
+
+				const stoken = await (
+					await ethers.getContractFactory('MockSToken')
+				).deploy(cont.address)
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
-				).deploy(cont.address)
+				).deploy(stoken.address)
 
 				const [owner, gateway, token, token2] = await ethers.getSigners()
 
@@ -709,6 +743,7 @@ describe('ERC20SimpleCollections', () => {
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
 				await cont.allowListToken(token.address)
+				await cont.setSTokenManager(stoken.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -729,7 +764,7 @@ describe('ERC20SimpleCollections', () => {
 					[x]
 				)
 
-				const res = await swapAndStake.callStatic.__mock(
+				const res = await swapAndStake.callStatic.__mockSwapAndStake(
 					1,
 					gateway.address,
 					{ input: eth1, fee: eth001, token: token2.address },
@@ -747,9 +782,12 @@ describe('ERC20SimpleCollections', () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
+				const stoken = await (
+					await ethers.getContractFactory('MockSToken')
+				).deploy(cont.address)
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
-				).deploy(cont.address)
+				).deploy(stoken.address)
 
 				const [owner, gateway, token] = await ethers.getSigners()
 
@@ -757,6 +795,7 @@ describe('ERC20SimpleCollections', () => {
 					await ethers.getContractFactory('Property')
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
+				await cont.setSTokenManager(stoken.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -777,7 +816,7 @@ describe('ERC20SimpleCollections', () => {
 					[x]
 				)
 
-				const res = await swapAndStake.callStatic.__mock(
+				const res = await swapAndStake.callStatic.__mockSwapAndStake(
 					1,
 					gateway.address,
 					{ input: eth1, fee: eth001, token: token.address },
@@ -795,12 +834,12 @@ describe('ERC20SimpleCollections', () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
-				const lockup = await (
-					await ethers.getContractFactory('MockLockup')
+				const stoken = await (
+					await ethers.getContractFactory('MockSToken')
 				).deploy(cont.address)
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
-				).deploy(cont.address)
+				).deploy(stoken.address)
 
 				const [owner, gateway, dev] = await ethers.getSigners()
 
@@ -810,6 +849,7 @@ describe('ERC20SimpleCollections', () => {
 				await cont.initialize(swapAndStake.address)
 				await cont.allowListToken(dev.address)
 				await cont.setDevToken(dev.address)
+				await cont.setSTokenManager(stoken.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const devAmount = utils.parseEther('1')
@@ -830,7 +870,7 @@ describe('ERC20SimpleCollections', () => {
 					[x]
 				)
 
-				const res = await lockup.callStatic.__mock(
+				const res = await stoken.callStatic.__mock(
 					1,
 					structPositions({
 						property: property.address,
@@ -849,10 +889,12 @@ describe('ERC20SimpleCollections', () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
-
+				const stoken = await (
+					await ethers.getContractFactory('MockSToken')
+				).deploy(cont.address)
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
-				).deploy(cont.address)
+				).deploy(stoken.address)
 
 				const [owner, gateway, token] = await ethers.getSigners()
 
@@ -861,6 +903,8 @@ describe('ERC20SimpleCollections', () => {
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
 				await cont.allowListToken(token.address)
+				await cont.setSTokenManager(stoken.address)
+
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -880,7 +924,7 @@ describe('ERC20SimpleCollections', () => {
 					[x]
 				)
 
-				await swapAndStake.__mock(
+				await swapAndStake.__mockSwapAndStake(
 					9,
 					gateway.address,
 					{ input: eth1, fee: eth001, token: token.address },
@@ -933,9 +977,12 @@ describe('ERC20SimpleCollections', () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
+				const stoken = await (
+					await ethers.getContractFactory('MockSToken')
+				).deploy(cont.address)
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
-				).deploy(cont.address)
+				).deploy(stoken.address)
 
 				const [owner, gateway, token] = await ethers.getSigners()
 
@@ -944,6 +991,7 @@ describe('ERC20SimpleCollections', () => {
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
 				await cont.allowListToken(token.address)
+				await cont.setSTokenManager(stoken.address)
 
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
@@ -964,7 +1012,7 @@ describe('ERC20SimpleCollections', () => {
 					[x]
 				)
 
-				await swapAndStake.__mock(
+				await swapAndStake.__mockSwapAndStake(
 					9,
 					gateway.address,
 					{ input: eth1, fee: eth001, token: token.address },
@@ -1017,9 +1065,12 @@ describe('ERC20SimpleCollections', () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
+				const stoken = await (
+					await ethers.getContractFactory('MockSToken')
+				).deploy(cont.address)
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
-				).deploy(cont.address)
+				).deploy(stoken.address)
 
 				const [owner, gateway, token] = await ethers.getSigners()
 
@@ -1028,6 +1079,8 @@ describe('ERC20SimpleCollections', () => {
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
 				await cont.allowListToken(token.address)
+				await cont.setSTokenManager(stoken.address)
+
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -1092,10 +1145,12 @@ describe('ERC20SimpleCollections', () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
-
+				const stoken = await (
+					await ethers.getContractFactory('MockSToken')
+				).deploy(cont.address)
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
-				).deploy(cont.address)
+				).deploy(stoken.address)
 
 				const [owner, gateway, token] = await ethers.getSigners()
 
@@ -1104,6 +1159,8 @@ describe('ERC20SimpleCollections', () => {
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
 				await cont.allowListToken(token.address)
+				await cont.setSTokenManager(stoken.address)
+
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -1123,7 +1180,7 @@ describe('ERC20SimpleCollections', () => {
 					[x]
 				)
 
-				await swapAndStake.__mock(
+				await swapAndStake.__mockSwapAndStake(
 					9,
 					gateway.address,
 					{ input: eth1, fee: eth001, token: token.address },
@@ -1152,10 +1209,12 @@ describe('ERC20SimpleCollections', () => {
 				const cont = await deployWithProxy<ERC20SimpleCollections>(
 					'ERC20SimpleCollections'
 				)
-
+				const stoken = await (
+					await ethers.getContractFactory('MockSToken')
+				).deploy(cont.address)
 				const swapAndStake = await (
 					await ethers.getContractFactory('DynamicTokenSwapAndStake')
-				).deploy(cont.address)
+				).deploy(stoken.address)
 
 				const [owner, gateway, token] = await ethers.getSigners()
 
@@ -1164,6 +1223,8 @@ describe('ERC20SimpleCollections', () => {
 				).deploy(owner.address, 'Testing', 'TEST')
 				await cont.initialize(swapAndStake.address)
 				await cont.allowListToken(token.address)
+				await cont.setSTokenManager(stoken.address)
+
 				const x = utils.keccak256(utils.toUtf8Bytes('X'))
 				const eth1 = utils.parseEther('1')
 				const eth001 = utils.parseEther('0.01')
@@ -1183,7 +1244,7 @@ describe('ERC20SimpleCollections', () => {
 					[x]
 				)
 
-				await swapAndStake.__mock(
+				await swapAndStake.__mockSwapAndStake(
 					9,
 					gateway.address,
 					{ input: eth1, fee: eth001, token: token.address },
