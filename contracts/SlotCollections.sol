@@ -27,10 +27,12 @@ contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		public propertyImageClaimedSlots;
 	mapping(address => bool) public allowlistedTokens;
 	address public dev;
+	address public sTokenManager;
 
-	function initialize(address _contract) external initializer {
+	function initialize(address _contract, address _sTokenManager) external initializer {
 		__Ownable_init();
 		swapAndStake = ISwapAndStake(_contract);
+		sTokenManager = _sTokenManager;
 	}
 
 	modifier onlyPropertyAuthor(address _property) {
@@ -165,6 +167,7 @@ contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
 		ISTokensManagerStruct.StakingPositions memory _positions,
 		bytes32 key
 	) external returns (bool) {
+		require(msg.sender == sTokenManager, "illegal access");
 		Image memory img = propertyImages[_positions.property][key];
 
 		if (!isValidImage(img, key, _positions.property)) {

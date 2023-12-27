@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { ethers, upgrades } from 'hardhat'
-import type { TimeCollections__factory } from '../typechain-types'
+import type { SlotCollections__factory } from '../typechain-types'
 
 const DEPLOYED_ADDRESS = ''
 
 async function main() {
 	const contract = (await ethers.getContractFactory(
 		'SlotCollections'
-	)) as TimeCollections__factory
+	)) as SlotCollections__factory
 	await upgrades
 		.validateUpgrade(DEPLOYED_ADDRESS, contract)
 		.then(() => {
