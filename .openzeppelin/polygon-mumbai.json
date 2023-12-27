@@ -28,6 +28,11 @@
       "address": "0x1d82F8BA629dDfC1Ca971C38d03E087D64Cfd531",
       "txHash": "0x00a1e13d26320acfc42a8c362852c1a274a3d04d2b9388d0eb674004cd107a44",
       "kind": "transparent"
+    },
+    {
+      "address": "0xb10f6AB0E0497aFe597baE9bBF8920906B461e73",
+      "txHash": "0xdb65f40cda648f31b23fac09baea7b63e62f08b04278acf20899ed07db8cf654",
+      "kind": "transparent"
     }
   ],
   "impls": {
@@ -968,6 +973,242 @@
             "numberOfBytes": "32"
           },
           "t_struct(Image)804_storage": {
+            "label": "struct SlotCollections.Image",
+            "members": [
+              {
+                "label": "src",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "name",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "description",
+                "type": "t_string_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "deadline",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "members",
+                "type": "t_uint32",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "requiredTokenAmount",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "requiredTokenFee",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "6"
+              },
+              {
+                "label": "token",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "7"
+              },
+              {
+                "label": "gateway",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "8"
+              }
+            ],
+            "numberOfBytes": "288"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "86eceae57e44023639a334c0ab6f8cc84ed85f7399e39d742ae0253213cbd659": {
+      "address": "0x617D890e7BF45e620d2d4125757FA896E2917E4f",
+      "txHash": "0x0a7688807c5bb9984cacd7b76541efa4342d256f550a10547bed7c64d36d7fa8",
+      "layout": {
+        "solcVersion": "0.8.9",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:94"
+          },
+          {
+            "label": "swapAndStake",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_contract(ISwapAndStake)5342",
+            "contract": "SlotCollections",
+            "src": "contracts/SlotCollections.sol:23"
+          },
+          {
+            "label": "propertyImages",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)4587_storage))",
+            "contract": "SlotCollections",
+            "src": "contracts/SlotCollections.sol:24"
+          },
+          {
+            "label": "stakedAmountAtMinted",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "contract": "SlotCollections",
+            "src": "contracts/SlotCollections.sol:25"
+          },
+          {
+            "label": "propertyImageClaimedSlots",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_uint32))",
+            "contract": "SlotCollections",
+            "src": "contracts/SlotCollections.sol:26"
+          },
+          {
+            "label": "allowlistedTokens",
+            "offset": 0,
+            "slot": "105",
+            "type": "t_mapping(t_address,t_bool)",
+            "contract": "SlotCollections",
+            "src": "contracts/SlotCollections.sol:28"
+          },
+          {
+            "label": "dev",
+            "offset": 0,
+            "slot": "106",
+            "type": "t_address",
+            "contract": "SlotCollections",
+            "src": "contracts/SlotCollections.sol:29"
+          },
+          {
+            "label": "sTokenManager",
+            "offset": 0,
+            "slot": "107",
+            "type": "t_address",
+            "contract": "SlotCollections",
+            "src": "contracts/SlotCollections.sol:30"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(ISwapAndStake)5342": {
+            "label": "contract ISwapAndStake",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_bytes32,t_struct(Image)4587_storage))": {
+            "label": "mapping(address => mapping(bytes32 => struct SlotCollections.Image))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_bytes32,t_uint32))": {
+            "label": "mapping(address => mapping(bytes32 => uint32))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
+            "label": "mapping(address => mapping(uint256 => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(Image)4587_storage)": {
+            "label": "mapping(bytes32 => struct SlotCollections.Image)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_uint32)": {
+            "label": "mapping(bytes32 => uint32)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Image)4587_storage": {
             "label": "struct SlotCollections.Image",
             "members": [
               {
