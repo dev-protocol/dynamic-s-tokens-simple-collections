@@ -29,7 +29,10 @@ contract SlotCollections is ITokenURIDescriptor, OwnableUpgradeable {
 	address public dev;
 	address public sTokenManager;
 
-	function initialize(address _contract, address _sTokenManager) external initializer {
+	function initialize(
+		address _contract,
+		address _sTokenManager
+	) external initializer {
 		__Ownable_init();
 		swapAndStake = ISwapAndStake(_contract);
 		sTokenManager = _sTokenManager;
