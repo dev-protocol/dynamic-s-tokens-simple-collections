@@ -49,7 +49,7 @@
 	},
 	"dependencies": {
 		"@devprotocol/i-s-tokens": "3.0.1",
-		"@openzeppelin/contracts-upgradeable": "^4.4.2",
+		"@openzeppelin/contracts-upgradeable": "^5.0.0",
 		"@openzeppelin/hardhat-upgrades": "^1.22.1",
 		"@typechain/ethers-v5": "^11.0.0",
 		"@typechain/hardhat": "^7.0.0",
