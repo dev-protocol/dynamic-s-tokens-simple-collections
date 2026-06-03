@@ -1216,10 +1216,10 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-4.9.6.tgz#38b21708a719da647de4bb0e4802ee235a0d24df"
   integrity sha512-m4iHazOsOCv1DgM7eD7GupTJ+NFVujRZt1wzddDPSVGpWdKq1SKkla5htKG7+IS4d2XOCtzkUNwRZ7Vq5aEUMA==
 
-"@openzeppelin/contracts@4.8.2":
-  version "4.8.2"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.8.2.tgz#d815ade0027b50beb9bcca67143c6bcc3e3923d6"
-  integrity sha512-kEUOgPQszC0fSYWpbh2kT94ltOJwj1qfT2DWo+zVttmGmf97JZ99LspePNaeeaLhCImaHVeBbjaQFZQn7+Zc5g==
+"@openzeppelin/contracts@5.6.1":
+  version "5.6.1"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-5.6.1.tgz#90c1cd427b3c1007ada4f42378ce84cc2a2145a5"
+  integrity sha512-Ly6SlsVJ3mj+b18W3R8gNufB7dTICT105fJhodGAGgyC2oqnBAhqSiNDJ8V8DLY05cCz81GLI0CU5vNYA1EC/w==
 
 "@openzeppelin/defender-base-client@^1.46.0":
   version "1.54.6"
